@@ -7,3 +7,4 @@ persistent memory, and solid-state drives.
 CXL offers coherency and memory semantics with bandwidth that scales with PCIe 
 bandwidth while achieving significantly lower latency than PCIe
 
+CXL
