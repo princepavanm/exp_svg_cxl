@@ -9,3 +9,5 @@ bandwidth while achieving significantly lower latency than PCIe
 
 CXL - computer express link
 interconnect between host and device.
+
+PCIE
