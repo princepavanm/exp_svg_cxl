@@ -8,3 +8,4 @@ CXL offers coherency and memory semantics with bandwidth that scales with PCIe
 bandwidth while achieving significantly lower latency than PCIe
 
 CXL - computer express link
+interconnect between host and device.
