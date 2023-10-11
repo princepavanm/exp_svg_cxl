@@ -52,6 +52,13 @@
   `include "cxl_pcie_agent_mon.sv"
   `include "cxl_pcie_agent.sv"
 
+  `include "../agents/axi_pcie_agent/axi_agent_tx.sv"
+  `include "../agents/axi_pcie_agent/axi_agent_drv.sv" 
+  `include "../agents/axi_pcie_agent/axi_agent_sqr.sv"  
+  `include "../agents/axi_pcie_agent/axi_agent_cov.sv"  
+  `include "../agents/axi_pcie_agent/axi_agent_mon.sv"  
+  `include "../agents/axi_pcie_agent/axi_agent.sv"  
+  
   `include "output_pcie_agent_tx.sv"
   `include "output_pcie_agent_mon.sv"
   `include "output_pcie_agent.sv"
@@ -61,6 +68,7 @@
 
 // Sequence List
   `include "../seqs/sequence_list.sv"
+  `include "virtual_seq.sv"
   `include "env.sv"
 
 // Test List

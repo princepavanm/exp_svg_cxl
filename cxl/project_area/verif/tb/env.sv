@@ -21,7 +21,8 @@ class cxl_env extends uvm_env;
   comp_pcie_agent	comp_pcie_agent_h;
   reset_pcie_agent	reset_pcie_agent_h;
   cxl_pcie_agent	cxl_pcie_agent_h;
-
+  axi_agent         axi_agent_h;
+  
   cxl_virtual_sqr 	 v_sqr_h;
 
   function new(string name="cxl_env", uvm_component parent=null);
@@ -36,6 +37,7 @@ class cxl_env extends uvm_env;
     comp_pcie_agent_h = comp_pcie_agent::type_id::create("comp_pcie_agent_h", this);
     reset_pcie_agent_h = reset_pcie_agent::type_id::create("reset_pcie_agent_h", this);
     cxl_pcie_agent_h = cxl_pcie_agent::type_id::create("cxl_pcie_agent_h", this);
+    axi_agent_h = axi_agent::type_id::create("axi_agent_h", this);
 
   endfunction:build_phase
 
@@ -45,6 +47,7 @@ class cxl_env extends uvm_env;
     v_sqr_h.comp_pcie_agent_sqr_h = comp_pcie_agent_h.sqr_h;
     v_sqr_h.reset_pcie_agent_sqr_h = reset_pcie_agent_h.sqr_h;
     v_sqr_h.cxl_pcie_agent_sqr_h = cxl_pcie_agent_h.sqr_h;
+    v_sqr_h.axi_agent_sqr_h = axi_agent_h.sqr_h;
 
   endfunction:connect_phase
 

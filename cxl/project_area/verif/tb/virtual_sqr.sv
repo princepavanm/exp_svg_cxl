@@ -21,6 +21,7 @@ class cxl_virtual_sqr extends uvm_sequencer;
   comp_pcie_agent_sqr 	 comp_pcie_agent_sqr_h;
   reset_pcie_agent_sqr 	 reset_pcie_agent_sqr_h;
   cxl_pcie_agent_sqr 	 cxl_pcie_agent_sqr_h;
+  axi_agent_sqr 	 axi_agent_sqr_h;
 
   function new(string name="cxl_virtual_sqr", uvm_component parent=null);
     super.new(name, parent);
@@ -34,6 +35,7 @@ class cxl_virtual_sqr extends uvm_sequencer;
     comp_pcie_agent_sqr_h = comp_pcie_agent_sqr::type_id::create("comp_pcie_agent_sqr_h", this);
     reset_pcie_agent_sqr_h = reset_pcie_agent_sqr::type_id::create("reset_pcie_agent_sqr_h", this);
     cxl_pcie_agent_sqr_h = cxl_pcie_agent_sqr::type_id::create("cxl_pcie_agent_sqr_h", this);
+    axi_agent_sqr_h = axi_agent_sqr::type_id::create("axi_agent_sqr_h", this);
 
   endfunction:build_phase
 
