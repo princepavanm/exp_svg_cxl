@@ -50,7 +50,7 @@ module pcie_axi_master #
     output wire                                    rx_req_tlp_ready,
 
     /*
-     * TLP output (completion)
+     * TLP output (coyympletion)
      */
     output wire [TLP_DATA_WIDTH-1:0]               tx_cpl_tlp_data,
     output wire [TLP_STRB_WIDTH-1:0]               tx_cpl_tlp_strb,
