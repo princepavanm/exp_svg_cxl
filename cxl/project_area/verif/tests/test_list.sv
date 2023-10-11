@@ -17,4 +17,4 @@
 //List of Include Files
 
   `include "cxl_base_test.sv"
-
+`include "mem_wr_req_test.sv"
