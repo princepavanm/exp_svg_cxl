@@ -2,9 +2,9 @@ class axi_agent_drv extends uvm_driver#(axi_agent_tx);
 
   `uvm_component_utils(axi_agent_drv)
 
-  axi_agent_tx               axi_agent_tx_h;
+  axi_agent_tx               req;
 
-  virtual pcie_intf pcie_pif;
+  virtual pcie_intf  pcie_pif;
 
   function new(string name="axi_agent_drv", uvm_component parent=null);
     super.new(name, parent);
@@ -23,14 +23,33 @@ task run_phase(uvm_phase phase);
 	forever
 		begin
 		seq_item_port.get_next_item(req);
-      		axi_agent_tx_h.print();
+      		req.print();
               	send_to_dut_axi(req);
      		seq_item_port.item_done();
 		end
 
 endtask:run_phase
 
-task send_to_dut_axi(axi_agent_tx   axi_agent_tx_h);
+task send_to_dut_axi(axi_agent_tx axi_agent_tx_h);
+
+	@((pcie_pif.clk) && pcie_pif.rst ==0)
+	pcie_pif.axi_drv_cb.m_axi_awready      <=    axi_agent_tx_h.m_axi_awready ;
+	pcie_pif.axi_drv_cb.m_axi_wready       <=    axi_agent_tx_h.m_axi_wready  ;
+	pcie_pif.axi_drv_cb.m_axi_bid          <=    axi_agent_tx_h.m_axi_bid     ;
+	pcie_pif.axi_drv_cb.m_axi_bresp        <=    axi_agent_tx_h.m_axi_bresp   ;
+	pcie_pif.axi_drv_cb.m_axi_bvalid       <=    axi_agent_tx_h.m_axi_bvalid  ;
+	pcie_pif.axi_drv_cb.m_axi_arready      <=    axi_agent_tx_h.m_axi_arready ;
+	pcie_pif.axi_drv_cb.m_axi_rid          <=    axi_agent_tx_h.m_axi_rid    ;
+        pcie_pif.axi_drv_cb.m_axi_rdata        <=    axi_agent_tx_h.m_axi_rdata   ;
+        pcie_pif.axi_drv_cb.m_axi_rresp        <=    axi_agent_tx_h.m_axi_rresp   ;
+        pcie_pif.axi_drv_cb.m_axi_rlast        <=    axi_agent_tx_h.m_axi_rlast   ;
+        pcie_pif.axi_drv_cb.m_axi_rvalid       <=    axi_agent_tx_h.m_axi_rvalid  ;
+
+	#100;
+
+endtask
+
+/*task send_to_dut_axi(axi_agent_tx   axi_agent_tx_h);
 	fork
 		send_write_addr_channel(   axi_agent_tx_h);
 		send_write_data_channel( axi_agent_tx_h);
@@ -69,7 +88,7 @@ task send_read_data_channel(axi_agent_tx   axi_agent_tx_h);
 	pcie_pif.m_axi_rlast 	= 1; //axi_agent_tx_h.m_axi_rlast;
 	pcie_pif.m_axi_rvalid 	= 1; //axi_agent_tx_h.m_axi_rvalid;
 endtask:send_read_data_channel
-
+*/
 
 /*task send_to_dut_axi(axi_agent_tx   axi_agent_tx_h);
 begin	

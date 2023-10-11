@@ -33,17 +33,26 @@ class reset_pcie_agent_drv extends uvm_driver#(reset_tx);
   endfunction:build_phase
 
   task run_phase(uvm_phase phase);
-
-     seq_item_port.get_next_item(req);
-       req.print();
-       drive_tx(req);
-     seq_item_port.item_done();
+     forever
+     begin
+     	seq_item_port.get_next_item(req);
+       		req.print();
+       		drive_tx(req);
+     	seq_item_port.item_done();
+     end
 
   endtask:run_phase
 
   task drive_tx(reset_tx     tx_h);
 
      //Implement driving logic here
+     repeat(tx_h.cycles)
+     begin
+	     pcie_pif.rst <= tx_h.state;
+	     @(negedge pcie_pif.clk);
+	     
+     end
+
 
   endtask:drive_tx
 

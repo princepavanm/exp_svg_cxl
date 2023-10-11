@@ -16,14 +16,16 @@
 
 class reset_tx extends uvm_sequence_item;
 
-  //rand bit [31:0] data;
+  rand bit  state;
+  rand int  cycles;
 
   `uvm_object_utils_begin(reset_tx)
-    //`uvm_field_int(data, UVM_ALL_ON)
+    `uvm_field_int(state, UVM_ALL_ON)
+    `uvm_field_int(cycles, UVM_ALL_ON)
   `uvm_object_utils_end
 
   function new(string name="reset_tx");
     super.new(name);
   endfunction
-
+  
 endclass

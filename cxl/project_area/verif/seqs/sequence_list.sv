@@ -17,3 +17,5 @@
 
   `include "cxl_base_seq.sv"
 `include "mem_wr_req.sv"
+`include "reset_seq.sv"
+`include "axi_to_comp_seq.sv"

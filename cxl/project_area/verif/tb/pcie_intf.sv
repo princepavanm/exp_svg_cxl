@@ -15,8 +15,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 //`include "define.sv"
 
-interface pcie_intf(input logic clk, rst);
-
+interface pcie_intf(input logic clk);
+//RESET
+logic                                       rst;
 //REQUEST
 logic [`TLP_DATA_WIDTH-1:0]                 rx_req_tlp_data;
 logic [`TLP_SEG_COUNT*`TLP_HDR_WIDTH-1:0]   rx_req_tlp_hdr;
@@ -81,7 +82,7 @@ logic                                       m_axi_rvalid;
 logic                                       m_axi_rready;
 
 clocking dri_cb@(posedge clk);
-    default input #1 output #1;
+    default input #1 output #0;
 output completer_id;
 output max_payload_size;
 output rx_req_tlp_data;
@@ -107,7 +108,7 @@ endclocking
 
 
 clocking axi_drv_cb@(posedge clk);
-    default input #1 output #1;
+    default input #1 output #0;
     input      m_axi_awid;
     input      m_axi_awaddr;
     input      m_axi_awlen;

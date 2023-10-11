@@ -29,16 +29,16 @@ module top;
   reg clk, rst;
 
 //Interface instantation
-  pcie_intf pcie_pif(clk, rst);
+  pcie_intf pcie_pif(clk);
 
 //Rst and Clock generation
   initial begin
 
     clk = 0;
 
-    rst = 1;
-    #10;
-    rst = 0;
+    //rst = 1;
+    //#10;
+    //rst = 0;
 
    // #500us;
     //$finish();
@@ -48,7 +48,7 @@ module top;
 
 //DUT Instantiation
 pcie_axi_master dut(	.clk(clk),
-			.rst(rst),
+			.rst(pcie_pif.rst),
 
      			// TLP input (request)
                         .rx_req_tlp_data(pcie_pif.rx_req_tlp_data),
@@ -85,24 +85,24 @@ pcie_axi_master dut(	.clk(clk),
                         .m_axi_awcache(pcie_pif.m_axi_awcache),
                         .m_axi_awprot(pcie_pif.m_axi_awprot),
                         .m_axi_awvalid(pcie_pif.m_axi_awvalid),
-                        .m_axi_awready(1),
-                       // .m_axi_awready(pcie_pif.m_axi_awready),
+                        //.m_axi_awready(1),
+                        .m_axi_awready(pcie_pif.m_axi_awready),
 
                         .m_axi_wdata(pcie_pif.m_axi_wdata),
                         .m_axi_wstrb(pcie_pif.m_axi_wstrb),
                         .m_axi_wlast(pcie_pif.m_axi_wlast),
                         .m_axi_wvalid(pcie_pif.m_axi_wvalid),
-                        .m_axi_wready(1),
-                        //.m_axi_wready(pcie_pif.m_axi_wready),
+                        //.m_axi_wready(1),
+                        .m_axi_wready(pcie_pif.m_axi_wready),
 
-                        .m_axi_bid(0),
-                        //.m_axi_bid(pcie_pif.m_axi_bid),
+                        //.m_axi_bid(0),
+                        .m_axi_bid(pcie_pif.m_axi_bid),
 
-                       .m_axi_bresp(0),
-                       // .m_axi_bresp(pcie_pif.m_axi_bresp),
+                       //.m_axi_bresp(0),
+                         .m_axi_bresp(pcie_pif.m_axi_bresp),
 
-                        .m_axi_bvalid(1),
-                        //.m_axi_bvalid(pcie_pif.m_axi_bvalid),
+                        //.m_axi_bvalid(1),
+                        .m_axi_bvalid(pcie_pif.m_axi_bvalid),
 
                         .m_axi_bready(pcie_pif.m_axi_bready),
                         .m_axi_arid(pcie_pif.m_axi_arid),
@@ -114,23 +114,23 @@ pcie_axi_master dut(	.clk(clk),
                         .m_axi_arcache(pcie_pif.m_axi_arcache),
                         .m_axi_arprot(pcie_pif.m_axi_arprot),
                         .m_axi_arvalid(pcie_pif.m_axi_arvalid),
-                        .m_axi_arready(1),
-                        //.m_axi_arready(pcie_pif.m_axi_arready),
+                        //.m_axi_arready(1),
+                        .m_axi_arready(pcie_pif.m_axi_arready),
 
-                        .m_axi_rid(0),
-                        //.m_axi_rid(pcie_pif.m_axi_rid),
+                        //.m_axi_rid(0),
+                        .m_axi_rid(pcie_pif.m_axi_rid),
 
-                        .m_axi_rdata(256'h FFFF_FFFF_FFFF_FFFF),
-                        //.m_axi_rdata(pcie_pif.m_axi_rdata),
+                        //.m_axi_rdata(256'h FFFF_FFFF_FFFF_FFFF),
+                        .m_axi_rdata(pcie_pif.m_axi_rdata),
 
-                        .m_axi_rresp(0),
-                        //.m_axi_rresp(pcie_pif.m_axi_rresp),
+                        //.m_axi_rresp(0),
+                        .m_axi_rresp(pcie_pif.m_axi_rresp),
 
-                        .m_axi_rlast(1),
-                        //.m_axi_rlast(pcie_pif.m_axi_rlast),
+                        //.m_axi_rlast(1),
+                        .m_axi_rlast(pcie_pif.m_axi_rlast),
 
-                        .m_axi_rvalid(1),
-                        //.m_axi_rvalid(pcie_pif.m_axi_rvalid),
+                        //.m_axi_rvalid(1),
+                        .m_axi_rvalid(pcie_pif.m_axi_rvalid),
 
                         .m_axi_rready(pcie_pif.m_axi_rready)
 
