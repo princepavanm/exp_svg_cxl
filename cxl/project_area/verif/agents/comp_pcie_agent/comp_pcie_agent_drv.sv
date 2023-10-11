@@ -36,15 +36,15 @@ class comp_pcie_agent_drv extends uvm_driver#(comp_tx);
 
      seq_item_port.get_next_item(req);
        req.print();
-       drive_tx(req);
+       send_to_dut_comp(req);
      seq_item_port.item_done();
 
   endtask:run_phase
 
-  task drive_tx(comp_tx     tx_h);
+  task send_to_dut_comp(comp_tx     tx_h);
 
-     //Implement driving logic here
+	  pcie_pif.tx_cpl_tlp_ready      = 1;// tx_h.tx_cpl_tlp_ready;
 
-  endtask:drive_tx
+  endtask:send_to_dut_comp
 
 endclass:comp_pcie_agent_drv

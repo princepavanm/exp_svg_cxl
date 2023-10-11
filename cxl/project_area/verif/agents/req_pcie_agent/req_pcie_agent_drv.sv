@@ -29,22 +29,37 @@ class req_pcie_agent_drv extends uvm_driver#(req_tx);
   function void build_phase(uvm_phase phase);
     super.build_phase(phase);
     if(!uvm_config_db#(virtual pcie_intf)::get(this, " ", "pcie_intf", pcie_pif))
-      `uvm_fatal("DRV", "***** Could not get pcie_pif *****")
+      `uvm_fatal("REQ DRV", "***** Could not get pcie_pif *****")
   endfunction:build_phase
 
   task run_phase(uvm_phase phase);
-
+	  forever 
+	  begin
      seq_item_port.get_next_item(req);
-       req.print();
-       drive_tx(req);
+       //tx_h.print();
+       send_to_dut_request(req);
      seq_item_port.item_done();
-
+	end
   endtask:run_phase
 
-  task drive_tx(req_tx     tx_h);
+  task send_to_dut_request(req_tx tx_h);
 
-     //Implement driving logic here
-
-  endtask:drive_tx
+		
+`uvm_info("Driver",$sformatf("reset is high"),UVM_MEDIUM)
+     @((pcie_pif.dri_mp.clk) && pcie_pif.rst ==0)
+	if(pcie_pif.rst ==0 && tx_h.rx_req_tlp_valid ==1 )
+	begin
+	  pcie_pif.completer_id      = tx_h.completer_id;
+	  pcie_pif.max_payload_size  = tx_h.max_payload_size;
+	  pcie_pif.rx_req_tlp_valid  = tx_h.rx_req_tlp_valid;
+	  pcie_pif.rx_req_tlp_sop    = tx_h.rx_req_tlp_sop;
+	  pcie_pif.rx_req_tlp_hdr    = tx_h.rx_req_tlp_hdr;
+	  pcie_pif.rx_req_tlp_data   = tx_h.rx_req_tlp_data;
+	  @(pcie_pif.dri_mp.clk)
+	  @(pcie_pif.dri_mp.clk)
+	  pcie_pif.rx_req_tlp_eop    = 1;//tx_h.rx_req_tlp_eop;
+  	end
+     
+  endtask:send_to_dut_request
 
 endclass:req_pcie_agent_drv
