@@ -1,4 +1,5 @@
-TEST_NAME=cxl_base_test
+#TEST_NAME=cxl_base_test
+TEST_NAME=req_to_axi_traffic_test
 MODULE_PATH=../../../cxl
 
 SEED=10
@@ -28,7 +29,7 @@ vsim:
 	rm -rf $(LOG_DIR)/$(TEST_NAME)_$(SEED)
 	rm -rf $(TEST_NAME)_$(SEED).ucdb
 	mkdir $(LOG_DIR)/$(TEST_NAME)_$(SEED)
-	vsim -c -sv_seed $(SEED) -cvgperinstance -voptargs=+acc -coverage -voptargs="+cover=all" -assertdebug -voptargs="+ASSERTION_ON" +UVM_VERBOSITY=UVM_LOW +UVM_TESTNAME=$(TEST_NAME) -l $(LOG_DIR)/$(TEST_NAME)_$(SEED)/$(TEST_NAME)_$(SEED).log -do "coverage save -onexit $(LOG_DIR)/$(TEST_NAME)_$(SEED)/$(TEST_NAME)_$(SEED).ucdb; run -all; exit" work.top
+	vsim  -debugDB  -sv_seed $(SEED) -cvgperinstance -voptargs=+acc -coverage -voptargs="+cover=all"  +UVM_VERBOSITY=UVM_LOW +UVM_TESTNAME=$(TEST_NAME) -l $(LOG_DIR)/$(TEST_NAME)_$(SEED)/$(TEST_NAME)_$(SEED).log -do "coverage save -onexit $(LOG_DIR)/$(TEST_NAME)_$(SEED)/$(TEST_NAME)_$(SEED).ucdb;" work.top
 
 run:	comp vsim
-
+#-cvgperinstance -voptargs=+acc -coverage -voptargs="+cover=none"-assertdebug -voptargs="+ASSERTION_ON" 
