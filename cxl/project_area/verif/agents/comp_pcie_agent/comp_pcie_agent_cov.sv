@@ -22,11 +22,14 @@ class comp_pcie_agent_cov extends uvm_subscriber#(comp_tx);
 
   comp_tx   tx_h;
 
-  covergroup cg();
+  covergroup comp_cg();
 
-    // Implement Cover bins here
-
-  endgroup:cg
+   	TX_TLP_READY:coverpoint tx_h.tx_req_tlp_ready
+			{
+				bins range[]{[0:1]};
+				
+			} 
+  endgroup:comp_cg
 
   function new(string name="comp_pcie_agent_cov", uvm_component parent=null);
     super.new(name, parent);
