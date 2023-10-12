@@ -39,7 +39,7 @@ task mem_wr_req ::body();
 //PM req.rx_req_tlp_hdr = 'h4003_1404_ffff_fff0_dead_bee0_0000_0000;
 
 
-//{req.rx_fmt, req.rx_type, req.rx_t_9, req.rx_tc, req.rx_t_8,  req.rx_attr, req.rx_ln, req.rx_th, req.rx_td, req.rx_ep, req.rx_attri, req.rx_at, req.rx_length, req.rx_requester_id, req.rx_tag, req.rx_last_be, req.rx_first_be, req.rx_addr, req.rx_ph };
+//{req.rx_fmt, req.rx_type_mi, req.rx_t_9, req.rx_tc, req.rx_t_8,  req.rx_attr_1, req.rx_ln, req.rx_th, req.rx_td, req.rx_ep, req.rx_attr_2, req.rx_at, req.rx_length, req.rx_requester_id, req.rx_tag, req.rx_last_be, req.rx_first_be, req.rx_addr, req.rx_ph };
 		begin
   			start_item(req);
 				req.completer_id = $random;
@@ -65,17 +65,17 @@ task mem_wr_req ::body();
 endtask	
 //DW0
 //PM req.rx_fmt = 010; 
-//PM req.rx_type = 00000;
+//PM req.rx_type_mi = 00000;
 //PM req.rx_t_9 =0;
 //PM req.rx_tc = 000;
 //PM req.rx_t_8 = 0;
 //PM 
-//PM req.rx_attr = 0;
+//PM req.rx_attr_1 = 0;
 //PM req.rx_ln = 1; 
 //PM req.rx_th = 1; 
 //PM req.rx_td =0;
 //PM req.rx_ep =0;
-//PM req.rx_attri = 01;
+//PM req.rx_attr_2 = 01;
 //PM req.rx_at = 01;
 //PM req.rx_length = 00000000100;
 //PM 
@@ -125,7 +125,6 @@ endtask
 //=================================================================================================
 //
 
-//req.rx_req_tlp_hdr ={req.rx_fmt, req.rx_type, req.rx_reser_1, req.rx_tc, req.rx_attr, req.rx_ln, req.rx_th, req.rx_td, req.rx_ep, req.rx_attri, req.rx_at, req.rx_length, req.rx_requester_id, req.rx_tag, req.rx_last_be, req.rx_first_be, req.rx_addr, req.rx_ph };
-		//	assert(req.randomize() with { req.rx_req_tlp_valid == 1; req.rx_req_tlp_sop == 1; req.rx_fmt == 010; req.rx_type == 00000; req.rx_tc == 000; req.rx_attr == 0; req.rx_ln == 1; req.rx_th == 1; req.rx_td ==0; req.rx_ep ==0; req.rx_attri == 01; req.rx_at == 01; req.rx_length == 00000000100; req.rx_req_tlp_eop == 0; req.rx_last_be == 1111; req.rx_first_be == 0000; }) 
+//	assert(req.randomize() with { req.rx_req_tlp_valid == 1; req.rx_req_tlp_sop == 1; req.rx_fmt == 010; req.rx_type_mi == 00000; req.rx_tc == 000; req.rx_attr_1 == 0; req.rx_ln == 1; req.rx_th == 1; req.rx_td ==0; req.rx_ep ==0; req.rx_attr_2 == 01; req.rx_at == 01; req.rx_length == 00000000100; req.rx_req_tlp_eop == 0; req.rx_last_be == 1111; req.rx_first_be == 0000; }) 
 
 
