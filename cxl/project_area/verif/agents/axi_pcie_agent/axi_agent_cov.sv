@@ -53,7 +53,7 @@ class axi_agent_cov extends uvm_subscriber#(axi_agent_tx);
     bins high={1};
   }
 // write data channel
-  WID:coverpoint axi_agent_tx_h.m_axi_wid
+  WID:coverpoint axi_agent_tx_h.m_axi_awid
   {
     bins all[]={[0:15]};
   }
@@ -69,7 +69,7 @@ class axi_agent_cov extends uvm_subscriber#(axi_agent_tx);
 
   WSTRB:coverpoint axi_agent_tx_h.m_axi_wstrb
   {
-    bins all[]={0:31};
+    bins all[]={[0:31]};
     
   }
 

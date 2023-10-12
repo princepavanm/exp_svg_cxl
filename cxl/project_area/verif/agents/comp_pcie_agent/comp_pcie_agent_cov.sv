@@ -24,9 +24,9 @@ class comp_pcie_agent_cov extends uvm_subscriber#(comp_tx);
 
   covergroup comp_cg();
 
-   	TX_TLP_READY:coverpoint tx_h.tx_req_tlp_ready
+   	TX_TLP_READY:coverpoint tx_h.tx_cpl_tlp_ready
 			{
-				bins range[]{[0:1]};
+				bins range[]={[0:1]};
 				
 			} 
   endgroup:comp_cg
