@@ -73,25 +73,24 @@ function void  connect_phase(uvm_phase phase);
  endfunction
 
 // **************** run phase*********************
-   task run_phase(uvm_phase phase);
+task run_phase(uvm_phase phase);
     super.run_phase(phase);
-forever	
-  begin
- `uvm_info("req_pcie_agent_mon","Monitor Run Phase", UVM_LOW)
-    collect_packet_intf ();
-    // req.print();
-    `uvm_info(get_type_name(),$sformatf("MONITOR collect data from dut \n %s",req.sprint()),UVM_MEDIUM)
+    req=req_tx::type_id::create("req");
+    `uvm_info("req_pcie_agent_mon","Monitor Run Phase", UVM_LOW)
+	forever	
+  		begin
+ 			 collect_packet_intf;
+    			 req.print();
+    			//`uvm_info(get_type_name(),$sformatf("MONITOR collect data from dut \n %s",req.sprint()),UVM_MEDIUM)
    
-  end  	
-  endtask:run_phase
+  		end  	
+endtask:run_phase
 // ***** collect data from intf********************
-task collect_packet_intf ();
- req=req_tx::type_id::create("req");
-     // if(pcie_pif.req_mon_cb.rx_req_tlp_valid)
-   @((pcie_pif.mon_mp.clk) && !pcie_pif.rst )
-   if(!pcie_pif.rst && req.rx_req_tlp_valid )
-
-  begin
+task collect_packet_intf;
+ 
+   @((pcie_pif.clk) && !pcie_pif.rst )
+   	if(!pcie_pif.rst && pcie_pif.mon_cb.rx_req_tlp_valid )
+        begin
 		
  	@(pcie_pif.mon_cb);
   	   req.completer_id     = pcie_pif.mon_cb.completer_id ;	
@@ -103,12 +102,11 @@ task collect_packet_intf ();
 	   req.rx_req_tlp_eop   = pcie_pif.mon_cb.rx_req_tlp_eop;
 	  
   
-    $display("MONITOR [T=%0t] pcie_pif.rx_req_tlp_sop=%0h  pcie_pif.rx_req_tlp_valid=%0h pcie_pif.rx_req_tlp_hdr =%0h  pcie_pif.rx_req_tlp_data=%0h  pcie_pif.rx_req_tlp_eop=%0h",$realtime,pcie_pif.mon_cb.rx_req_tlp_sop,  pcie_pif.mon_cb.rx_req_tlp_valid, pcie_pif.mon_cb.rx_req_tlp_hdr,  pcie_pif.mon_cb.rx_req_tlp_data,  pcie_pif.mon_cb.rx_req_tlp_eop  );
+          // $display("MONITOR [T=%0t] pcie_pif.rx_req_tlp_sop=%0h  pcie_pif.rx_req_tlp_valid=%0h pcie_pif.rx_req_tlp_hdr =%0h  pcie_pif.rx_req_tlp_data=%0h  pcie_pif.rx_req_tlp_eop=%0h",$realtime,pcie_pif.mon_cb.rx_req_tlp_sop,  pcie_pif.mon_cb.rx_req_tlp_valid, pcie_pif.mon_cb.rx_req_tlp_hdr,  pcie_pif.mon_cb.rx_req_tlp_data,  pcie_pif.mon_cb.rx_req_tlp_eop  );
 
-    $display( "MONITOR [T=%0t] req.rx_req_tlp_sop=%0h  req.rx_req_tlp_valid=%0h req.rx_req_tlp_hdr =%0h  req.rx_req_tlp_data=%0h  req.rx_req_tlp_eop=%0h",$realtime,req.rx_req_tlp_sop,  req.rx_req_tlp_valid, req.rx_req_tlp_hdr,  req.rx_req_tlp_data,  req.rx_req_tlp_eop);
-//  else
-   end
-//`uvm_error(get_type_name(),$sformatf("Unable to collect in req_pcie_agent_mon()"))
-req.print();
+           //$display( "MONITOR [T=%0t] req.rx_req_tlp_sop=%0h  req.rx_req_tlp_valid=%0h req.rx_req_tlp_hdr =%0h  req.rx_req_tlp_data=%0h  req.rx_req_tlp_eop=%0h",$realtime,req.rx_req_tlp_sop,  req.rx_req_tlp_valid, req.rx_req_tlp_hdr,  req.rx_req_tlp_data,  req.rx_req_tlp_eop);
+       end
+
 endtask :collect_packet_intf
+
 endclass:req_pcie_agent_mon

@@ -34,7 +34,7 @@ class cxl_base_test extends uvm_test;
   function void end_of_elaboration_phase(uvm_phase phase);
     uvm_factory factory = uvm_factory::get();
     uvm_top.print_topology();
-    factory.print();
+    //factory.print();
   endfunction:end_of_elaboration_phase
 
 endclass:cxl_base_test
