@@ -54,7 +54,7 @@ function void  connect_phase(uvm_phase phase);
 
     `uvm_info("AXI_AGENT_MON","Monitor Run Phase", UVM_LOW)
 collect_packet_axi_intf();
- axi_agent_tx_h.print();
+// axi_agent_tx_h.print();
     `uvm_info(get_type_name(),$sformatf("MONITOR collect data from dut \n %s",axi_agent_tx_h.sprint()),UVM_MEDIUM)
    
   endtask:run_phase

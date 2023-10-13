@@ -46,8 +46,8 @@ class req_pcie_agent_drv extends uvm_driver#(req_tx);
 
 		
 `uvm_info("Driver",$sformatf("reset is high"),UVM_MEDIUM)
-     @((pcie_pif.dri_mp.clk) && pcie_pif.rst ==0)
-	if(pcie_pif.rst ==0 && tx_h.rx_req_tlp_valid ==1 )
+     @((pcie_pif.dri_mp.clk) && !pcie_pif.rst )
+	if(!pcie_pif.rst && tx_h.rx_req_tlp_valid)
 	begin
 	  pcie_pif.completer_id      = tx_h.completer_id;
 	  pcie_pif.max_payload_size  = tx_h.max_payload_size;
@@ -55,11 +55,11 @@ class req_pcie_agent_drv extends uvm_driver#(req_tx);
 	  pcie_pif.rx_req_tlp_sop    = tx_h.rx_req_tlp_sop;
 	  pcie_pif.rx_req_tlp_hdr    = tx_h.rx_req_tlp_hdr;
 	  pcie_pif.rx_req_tlp_data   = tx_h.rx_req_tlp_data;
-	  @(pcie_pif.dri_mp.clk)
-	  @(pcie_pif.dri_mp.clk)
-	  pcie_pif.rx_req_tlp_eop    = 1;//tx_h.rx_req_tlp_eop;
+//	  @(pcie_pif.dri_mp.clk)
+//	  @(pcie_pif.dri_mp.clk)
+	  pcie_pif.rx_req_tlp_eop    = tx_h.rx_req_tlp_eop;
+     $display("DRIVER [T=%0t] req.rx_req_tlp_sop=%0h  req.rx_req_tlp_valid=%0h req.rx_req_tlp_hdr =%0h  req.rx_req_tlp_data=%0h  req.rx_req_tlp_eop=%0h",$realtime,req.rx_req_tlp_sop,  req.rx_req_tlp_valid, req.rx_req_tlp_hdr,  req.rx_req_tlp_data,  req.rx_req_tlp_eop);  
   	end
-     
   endtask:send_to_dut_request
 
 endclass:req_pcie_agent_drv

@@ -48,7 +48,7 @@ task mem_wr_req ::body();
 				req.rx_req_tlp_data = 256'h F00DF00D_CAFECAFE_DEADBEEF_B00CB00C; 
 				req.rx_req_tlp_valid = 1; 
 				req.rx_req_tlp_sop =1;
-			//FIXME	req.rx_req_tlp_eop =0; 
+				req.rx_req_tlp_eop =0; 
   			finish_item(req);
 		#10;
  			start_item(req);
@@ -58,8 +58,9 @@ task mem_wr_req ::body();
 				req.rx_req_tlp_data = $random; 
 				req.rx_req_tlp_valid = 1; 
 				req.rx_req_tlp_sop =1;
-			//FIXME	req.rx_req_tlp_eop =0; 
+				req.rx_req_tlp_eop =1; 
   			finish_item(req);
+		
 		end
 
 endtask	

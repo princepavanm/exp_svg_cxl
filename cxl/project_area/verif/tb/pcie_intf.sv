@@ -155,20 +155,23 @@ clocking axi_drv_cb@(posedge clk);
  modport dri_mp(clocking dri_cb);
  modport axi_drv_mp(clocking axi_drv_cb);
  modport comp_drv_mp(clocking comp_drv_cb);
-  /*clocking mon_cb@(posedge clk);
+
+ clocking mon_cb@(posedge clk);
     default input #1 output #1;
- 
+    
+input completer_id; 
+input max_payload_size;
 input rx_req_tlp_data;
 input rx_req_tlp_hdr;
 input rx_req_tlp_valid;
 input rx_req_tlp_sop;
-inout rx_req_tlp_eop;
-output rx_req_tlp_ready;
+input rx_req_tlp_eop;
+input rx_req_tlp_ready;
 
   endclocking
 
-  modport dri_mp(clocking dri_cb);
-  modport mon_mp(clocking mon_cb);*/
+ 
+  modport mon_mp(clocking mon_cb);
 
 
 endinterface:pcie_intf
