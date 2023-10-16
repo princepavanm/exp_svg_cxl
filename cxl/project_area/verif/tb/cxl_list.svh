@@ -69,6 +69,7 @@
 // Sequence List
   `include "../seqs/sequence_list.sv"
   `include "virtual_seq.sv"
+  `include "cxl_sbd.sv"
   `include "env.sv"
 
 // Test List

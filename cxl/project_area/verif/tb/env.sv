@@ -13,24 +13,31 @@
 // Additional Comments:
 //
 //////////////////////////////////////////////////////////////////////////////////
+//`include "cxl_sbd.sv"
+
 
 class cxl_env extends uvm_env;
   `uvm_component_utils(cxl_env)
 
+   cxl_sbd		cxl_sbd_h;
+   
   req_pcie_agent	req_pcie_agent_h;
   comp_pcie_agent	comp_pcie_agent_h;
   reset_pcie_agent	reset_pcie_agent_h;
   cxl_pcie_agent	cxl_pcie_agent_h;
-  axi_agent         axi_agent_h;
+  axi_agent             axi_agent_h;
+  
   
   cxl_virtual_sqr 	 v_sqr_h;
 
-  function new(string name="cxl_env", uvm_component parent=null);
-    super.new(name, parent);
-  endfunction:new
+/*********************** constructor***********************/
+function new(string name="cxl_env", uvm_component parent=null);
+	super.new(name, parent);
+endfunction:new
 
-  function void build_phase(uvm_phase phase);
-    super.build_phase(phase);
+/******************* build phase*****************************/
+function void build_phase(uvm_phase phase);
+	super.build_phase(phase);
     v_sqr_h = cxl_virtual_sqr::type_id::create("v_sqr_h", this);
 
     req_pcie_agent_h = req_pcie_agent::type_id::create("req_pcie_agent_h", this);
@@ -38,20 +45,28 @@ class cxl_env extends uvm_env;
     reset_pcie_agent_h = reset_pcie_agent::type_id::create("reset_pcie_agent_h", this);
     cxl_pcie_agent_h = cxl_pcie_agent::type_id::create("cxl_pcie_agent_h", this);
     axi_agent_h = axi_agent::type_id::create("axi_agent_h", this);
+    cxl_sbd_h = cxl_sbd::type_id::create("cxl_sbd_h", this);
 
   endfunction:build_phase
 
-  function void connect_phase(uvm_phase phase);
+/***************** connect phase**********************/
+ function void connect_phase(uvm_phase phase);
     super.connect_phase(phase);
+    
     v_sqr_h.req_pcie_agent_sqr_h = req_pcie_agent_h.sqr_h;
     v_sqr_h.comp_pcie_agent_sqr_h = comp_pcie_agent_h.sqr_h;
     v_sqr_h.reset_pcie_agent_sqr_h = reset_pcie_agent_h.sqr_h;
     v_sqr_h.cxl_pcie_agent_sqr_h = cxl_pcie_agent_h.sqr_h;
     v_sqr_h.axi_agent_sqr_h = axi_agent_h.sqr_h;
 
-  endfunction:connect_phase
+//req_pcie_agent_h.mon_h.req_pcie_agent_mon_port.connect(cxl_sbd_h.imp_req_tx);
+// axi_agent_h.mon_h.axi_agent_mon_port.connect(cxl_sbd_h.imp_axi_agent_tx);
 
-  function void report();
+endfunction:connect_phase
+
+//*********************************Report for checking error************************************************
+  
+function void report();
 
     uvm_report_server reportserver=uvm_report_server::get_server();
 
@@ -63,9 +78,23 @@ class cxl_env extends uvm_env;
       $display("**************************************************");
       $display("****************** TEST  PASSED ******************");
       $display("**************************************************");
+      $display("");
+      $display("");
+      $display("******  ******  ****** ******         ****** 	******  ******  ******              ");
+      $display("   *	  *       *        *            *    * 	*    *  *       *                   ");
+      $display("   *	  *       *        *            *    * 	*    *  *       *                   ");
+      $display("   *	  ******  ******   *            ****** 	******  ******  ******              ");
+      $display("   *	  *            *   *            *       *    *       *       *              ");
+      $display("   *	  *            *   *            *       *    *       *       *              ");
+      $display("   *	  ******  ******   *            *       *    *  ******  ******              ");
+      $display("");
+      $display("");
+      $display("============================================================================================================");
+      
     end//if_end
 
-    else begin
+    else 
+    begin
       $display("**************************************************");
       $display("                    \\ / ");
       $display("                    oVo ");
