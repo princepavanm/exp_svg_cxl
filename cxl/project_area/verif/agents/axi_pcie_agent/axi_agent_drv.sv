@@ -1,8 +1,25 @@
+//////////////////////////////////////////////////////////////////////////////////
+// Company:  Expolog Technologies.
+//           Copyright (c) 2023 by Expolog Technologies, Inc. All rights reserved.
+//
+// Engineer : 
+// Revision tag :
+// Module Name      :    
+// Project Name      : 
+// component name : 
+// Description: 
+//              
+//
+// Additional Comments:
+//
+//////////////////////////////////////////////////////////////////////////////////
+
+
 class axi_agent_drv extends uvm_driver#(axi_agent_tx);
 
   `uvm_component_utils(axi_agent_drv)
 
-  axi_agent_tx               req;
+  axi_agent_tx               axi_agent_tx_h;
 
   virtual pcie_intf  pcie_pif;
 
@@ -14,16 +31,14 @@ class axi_agent_drv extends uvm_driver#(axi_agent_tx);
     super.build_phase(phase);
     if(!uvm_config_db#(virtual pcie_intf)::get(this, " ", "pcie_intf", pcie_pif))
       `uvm_fatal("AXI DRV", "***** Could not get pcie_pif *****")
+    axi_agent_tx_h = axi_agent_tx::type_id::create("axi_agent_tx_h");
+
   endfunction:build_phase
-
-
-
 
 task run_phase(uvm_phase phase);
 	forever
 		begin
 		seq_item_port.get_next_item(req);
-      		req.print();
               	send_to_dut_axi(req);
      		seq_item_port.item_done();
 		end
@@ -31,7 +46,7 @@ task run_phase(uvm_phase phase);
 endtask:run_phase
 
 task send_to_dut_axi(axi_agent_tx axi_agent_tx_h);
-
+begin 
 	@((pcie_pif.clk) && pcie_pif.rst ==0)
 	pcie_pif.axi_drv_cb.m_axi_awready      <=    axi_agent_tx_h.m_axi_awready ;
 	pcie_pif.axi_drv_cb.m_axi_wready       <=    axi_agent_tx_h.m_axi_wready  ;
@@ -39,14 +54,16 @@ task send_to_dut_axi(axi_agent_tx axi_agent_tx_h);
 	pcie_pif.axi_drv_cb.m_axi_bresp        <=    axi_agent_tx_h.m_axi_bresp   ;
 	pcie_pif.axi_drv_cb.m_axi_bvalid       <=    axi_agent_tx_h.m_axi_bvalid  ;
 	pcie_pif.axi_drv_cb.m_axi_arready      <=    axi_agent_tx_h.m_axi_arready ;
-	pcie_pif.axi_drv_cb.m_axi_rid          <=    axi_agent_tx_h.m_axi_rid    ;
+	pcie_pif.axi_drv_cb.m_axi_rid          <=    axi_agent_tx_h.m_axi_rid     ;
         pcie_pif.axi_drv_cb.m_axi_rdata        <=    axi_agent_tx_h.m_axi_rdata   ;
         pcie_pif.axi_drv_cb.m_axi_rresp        <=    axi_agent_tx_h.m_axi_rresp   ;
         pcie_pif.axi_drv_cb.m_axi_rlast        <=    axi_agent_tx_h.m_axi_rlast   ;
         pcie_pif.axi_drv_cb.m_axi_rvalid       <=    axi_agent_tx_h.m_axi_rvalid  ;
 
-	#100;
-
+	#100;// why this delay?
+//	@(pcie_pif.clk)
+end
+      		//axi_agent_tx_h.print();
 endtask
 
 /*task send_to_dut_axi(axi_agent_tx   axi_agent_tx_h);

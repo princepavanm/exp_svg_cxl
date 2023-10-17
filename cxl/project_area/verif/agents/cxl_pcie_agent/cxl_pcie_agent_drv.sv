@@ -35,7 +35,7 @@ class cxl_pcie_agent_drv extends uvm_driver#(cxl_tx);
   task run_phase(uvm_phase phase);
 
      seq_item_port.get_next_item(req);
-       req.print();
+       //req.print();
        drive_tx(req);
      seq_item_port.item_done();
 

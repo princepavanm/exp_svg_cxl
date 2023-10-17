@@ -47,7 +47,7 @@ class comp_pcie_agent_mon extends uvm_monitor;
     forever
     begin
 	    collect_packet_intf;
-	    tx_h.print();
+	    //tx_h.print();
     end
 
   endtask:run_phase

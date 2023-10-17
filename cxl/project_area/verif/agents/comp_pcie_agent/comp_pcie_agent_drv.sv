@@ -35,7 +35,7 @@ class comp_pcie_agent_drv extends uvm_driver#(comp_tx);
   task run_phase(uvm_phase phase);
 
      seq_item_port.get_next_item(req);
-       req.print();
+       //req.print();
        send_to_dut_comp(req);
      seq_item_port.item_done();
 

@@ -36,7 +36,7 @@ class reset_pcie_agent_drv extends uvm_driver#(reset_tx);
      forever
      begin
      	seq_item_port.get_next_item(req);
-       		req.print();
+       		//req.print();
        		drive_tx(req);
      	seq_item_port.item_done();
      end
