@@ -60,7 +60,8 @@ run_r2a_test: comp
 	rm -rf $(LOG_DIR)/$(REQ_TO_AXI_TRAFFIC_TEST)_$(SEED)
 	rm -rf $(REQ_TO_AXI_TRAFFIC_TEST)_$(SEED).ucdb
 	mkdir $(LOG_DIR)/$(REQ_TO_AXI_TRAFFIC_TEST)_$(SEED)
-	vsim -c -debugDB  -sv_seed $(SEED) -cvgperinstance -voptargs=+acc -coverage -voptargs="+cover=all"  +UVM_VERBOSITY=UVM_MEDIUM +UVM_TESTNAME=$(REQ_TO_AXI_TRAFFIC_TEST) -l $(LOG_DIR)/$(REQ_TO_AXI_TRAFFIC_TEST)_$(SEED)/$(REQ_TO_AXI_TRAFFIC_TEST)_$(SEED).log -do "coverage save -onexit $(LOG_DIR)/$(REQ_TO_AXI_TRAFFIC_TEST)_$(SEED)/$(REQ_TO_AXI_TRAFFIC_TEST)_$(SEED).ucdb;  run -all;exit" work.top
+	
+	vsim -c -debugDB  -sv_seed $(SEED) -cvgperinstance -voptargs=+acc -coverage -voptargs="+cover=all"  +UVM_VERBOSITY=UVM_MEDIUM +UVM_TESTNAME=$(REQ_TO_AXI_TRAFFIC_TEST) -l $(LOG_DIR)/$(A2C_TEST)_$(SEED)/$(REQ_TO_AXI_TRAFFIC_TEST)_$(SEED).log -do "coverage save -onexit $(LOG_DIR)/$(REQ_TO_AXI_TRAFFIC_TEST)_$(SEED)/$(REQ_TO_AXI_TRAFFIC_TEST)_$(SEED).ucdb; run -all;exit" work.top
 
 run_a2c_test: comp
 	rm -rf $(LOG_DIR)/$(A2C_TEST)_$(SEED)
