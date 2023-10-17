@@ -21,6 +21,7 @@ task run_phase(uvm_phase phase);
 	v_rst_sq=virt_reset_seq::type_id::create("v_rst_sq");
 	v_rst_sq.start(env_h.v_sqr_h); // 1st reset seq
 	v_a2c_sq.start(env_h.v_sqr_h); // 2nd axi to comp seq
+	#500;
 	phase.drop_objection(this);
 endtask
 endclass

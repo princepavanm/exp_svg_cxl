@@ -39,8 +39,9 @@ task run_phase(uvm_phase phase);
 	forever
 		begin
 		seq_item_port.get_next_item(req);
-              	send_to_dut_axi(req);
-     		seq_item_port.item_done();
+              		send_to_dut_axi(req);
+			`uvm_info(get_type_name(),$sformatf("=============================================AXI DRIVER======================================= \n %s",req.sprint()),UVM_MEDIUM)
+                seq_item_port.item_done();
 		end
 
 endtask:run_phase
@@ -59,11 +60,7 @@ begin
         pcie_pif.axi_drv_cb.m_axi_rresp        <=    axi_agent_tx_h.m_axi_rresp   ;
         pcie_pif.axi_drv_cb.m_axi_rlast        <=    axi_agent_tx_h.m_axi_rlast   ;
         pcie_pif.axi_drv_cb.m_axi_rvalid       <=    axi_agent_tx_h.m_axi_rvalid  ;
-
-	#100;// why this delay?
-//	@(pcie_pif.clk)
 end
-      		//axi_agent_tx_h.print();
 endtask
 
 /*task send_to_dut_axi(axi_agent_tx   axi_agent_tx_h);

@@ -36,7 +36,7 @@ class req_pcie_agent_drv extends uvm_driver#(req_tx);
   task run_phase(uvm_phase phase);
 	  forever 
 	  begin
-     seq_item_port.get_next_item(req);
+     seq_item_port.get_next_item(tx_h);
        send_to_dut_request(tx_h);
      seq_item_port.item_done();
 	end
@@ -45,23 +45,23 @@ class req_pcie_agent_drv extends uvm_driver#(req_tx);
   task send_to_dut_request(req_tx tx_h);
    `uvm_info("Driver","reset is high",UVM_MEDIUM)
    begin
-     @((pcie_pif.dri_mp.clk) && !pcie_pif.rst )
+     @((pcie_pif.clk) && !pcie_pif.rst )
 	if(!pcie_pif.rst && tx_h.rx_req_tlp_valid)
 	begin
-	  pcie_pif.completer_id      = tx_h.completer_id;
-	  pcie_pif.max_payload_size  = tx_h.max_payload_size;
-	  pcie_pif.rx_req_tlp_valid  = tx_h.rx_req_tlp_valid;
-	  pcie_pif.rx_req_tlp_sop    = tx_h.rx_req_tlp_sop;
-	  pcie_pif.rx_req_tlp_hdr    = tx_h.rx_req_tlp_hdr;
-	  pcie_pif.rx_req_tlp_data   = tx_h.rx_req_tlp_data;
+	  pcie_pif.dri_cb.completer_id      <= tx_h.completer_id;
+	  pcie_pif.dri_cb.max_payload_size  <= tx_h.max_payload_size;
+	  pcie_pif.dri_cb.rx_req_tlp_valid  <= tx_h.rx_req_tlp_valid;
+	  pcie_pif.dri_cb.rx_req_tlp_sop    <= tx_h.rx_req_tlp_sop;
+	  pcie_pif.dri_cb.rx_req_tlp_hdr    <= tx_h.rx_req_tlp_hdr;
+	  pcie_pif.dri_cb.rx_req_tlp_data   <= tx_h.rx_req_tlp_data;
 //	  @(pcie_pif.dri_mp.clk)
 //	  @(pcie_pif.dri_mp.clk)
-	  pcie_pif.rx_req_tlp_eop    = tx_h.rx_req_tlp_eop;
+	  pcie_pif.dri_cb.rx_req_tlp_eop    <= tx_h.rx_req_tlp_eop;
   	end
    end 
       // tx_h.print();
 	  
-       `uvm_info(get_type_name(),$sformatf("=============================================DRIVER REQ to dut ======================================= \n %s",req.sprint()),UVM_MEDIUM)
+       `uvm_info(get_type_name(),$sformatf("=============================================DRIVER REQ to dut ======================================= \n %s",tx_h.sprint()),UVM_MEDIUM)
        
   endtask:send_to_dut_request
 

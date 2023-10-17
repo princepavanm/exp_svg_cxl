@@ -150,7 +150,6 @@ pcie_axi_master dut(	.clk(clk),
 
   initial begin
 	  #10000;
-  
-$finish;
-end
+	  $finish;
+  end
 endmodule:top

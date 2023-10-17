@@ -45,40 +45,33 @@ function void  connect_phase(uvm_phase phase);
 // **************** run phase*********************
 task run_phase(uvm_phase phase);
     super.run_phase(phase);
+     req=req_tx::type_id::create("req");
     `uvm_info("req_pcie_agent_mon","Monitor Run Phase", UVM_LOW)
 	forever
 	//repeat(4);	
   		begin
  			 collect_packet_intf;
-    			  `uvm_info(get_type_name(),$sformatf("=============================================MONITOR REQ from dut ======================================= \n %s",req.sprint()),UVM_MEDIUM)
-  		end  	
+			 @(pcie_pif.mon_cb);
+    	        end  	
 endtask:run_phase
 
 // ***** collect data from intf********************
 task collect_packet_intf;
-    req=req_tx::type_id::create("req");
- 	@(pcie_pif.mon_cb);
- 	@(pcie_pif.mon_cb);
- 	@(pcie_pif.mon_cb);
- 	@(pcie_pif.mon_cb);
- 	@(pcie_pif.mon_cb);
-begin 
+ 
    @((pcie_pif.clk) && !pcie_pif.rst )
   	if(!pcie_pif.rst && pcie_pif.mon_cb.rx_req_tlp_valid )
        begin
-		
- 	@(pcie_pif.mon_cb);
-    //  if( pcie_pif.mon_cb.rx_req_tlp_sop)
-  	   req.completer_id     = pcie_pif.completer_id ;	
- 	   req.max_payload_size = pcie_pif.max_payload_size;
-     	   req.rx_req_tlp_valid = pcie_pif.rx_req_tlp_valid;
-       	   req.rx_req_tlp_sop   = pcie_pif.rx_req_tlp_sop;  
-	   req.rx_req_tlp_hdr   = pcie_pif.rx_req_tlp_hdr;
-	   req.rx_req_tlp_data  = pcie_pif.rx_req_tlp_data;
-	   req.rx_req_tlp_eop   = pcie_pif.rx_req_tlp_eop;
-  
-       end
-end
+           req.completer_id     = pcie_pif.mon_cb.completer_id ;	
+ 	   req.max_payload_size = pcie_pif.mon_cb.max_payload_size;
+     	   req.rx_req_tlp_valid = pcie_pif.mon_cb.rx_req_tlp_valid;
+       	   req.rx_req_tlp_sop   = pcie_pif.mon_cb.rx_req_tlp_sop;  
+	   req.rx_req_tlp_hdr   = pcie_pif.mon_cb.rx_req_tlp_hdr;
+	   req.rx_req_tlp_data  = pcie_pif.mon_cb.rx_req_tlp_data;
+	   req.rx_req_tlp_eop   = pcie_pif.mon_cb.rx_req_tlp_eop;
+  	   
+	   `uvm_info(get_type_name(),$sformatf("=============================================MONITOR REQ from dut ======================================= \n %s",req.sprint()),UVM_MEDIUM)
+
+	end
      
 endtask :collect_packet_intf
 

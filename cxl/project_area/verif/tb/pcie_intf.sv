@@ -165,7 +165,7 @@ clocking axi_drv_cb@(posedge clk);
 //request Monitor clocking block
 //=====================================================================
 clocking mon_cb@(posedge clk);
-    default input #1 output #0;
+    default input #1 output #1;
 	input completer_id; 
 	input max_payload_size;
 	input rx_req_tlp_data;
@@ -194,7 +194,7 @@ endclocking
 //AXI Monitor clocking block
 //=====================================================================
 clocking axi_mon_cb@(posedge clk);
-    	default input #1 output #0;
+    	default input #1 output #1;
     	input      m_axi_awid;
     	input      m_axi_awaddr;
     	input      m_axi_awlen;
