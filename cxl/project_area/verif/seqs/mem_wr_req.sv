@@ -50,7 +50,7 @@ task mem_wr_req ::body();
 				req.rx_req_tlp_sop =1;
 				req.rx_req_tlp_eop =0; 
   			finish_item(req);
-		#10;
+	//	#10;
  			start_item(req);
 				req.completer_id = $random;
 				req.max_payload_size=$random;
