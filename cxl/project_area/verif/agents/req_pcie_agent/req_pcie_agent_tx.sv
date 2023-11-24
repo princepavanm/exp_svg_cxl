@@ -20,13 +20,14 @@ class req_tx extends uvm_sequence_item;
  	     bit clk;
 	     bit rst;
 	rand bit [`TLP_DATA_WIDTH-1:0]               rx_req_tlp_data;
-    	     bit [`TLP_SEG_COUNT*`TLP_HDR_WIDTH-1:0] rx_req_tlp_hdr;
+    	rand bit [`TLP_SEG_COUNT*`TLP_HDR_WIDTH-1:0] rx_req_tlp_hdr;
     	rand bit [`TLP_SEG_COUNT-1:0]                rx_req_tlp_valid;
     	rand bit [`TLP_SEG_COUNT-1:0]                rx_req_tlp_sop;
     	rand bit [`TLP_SEG_COUNT-1:0]                rx_req_tlp_eop;
     	     bit                                     rx_req_tlp_ready;
 	rand bit [15:0]                              completer_id;
 	rand bit [2:0]                               max_payload_size;
+	rand bit                                     cxlio_mctp_en; // Switch to route the transactions to the cxl component
 	
 	     reg [2:0] rx_fmt;
 	     reg [4:0] rx_type_mi;

@@ -5,7 +5,7 @@ class virtual_sequence extends uvm_sequence#(uvm_sequence_item);
   req_pcie_agent_sqr   req_pcie_agent_sqr_h;
   axi_agent_sqr 	 axi_agent_sqr_h;
   reset_pcie_agent_sqr   reset_pcie_agent_sqr_h;
-
+ 
   
   extern function new(string name="virtual_sequence");
   extern task body(); 
@@ -107,5 +107,34 @@ task virt_axi_to_comp_seq:: body();
   a2c_sq=axi_to_comp_seq::type_id::create("a2c_sq");
   a2c_sq.start(axi_agent_sqr_h);
 endtask 
+
+
+/**********************************************Req to CXL.io************************************/
+class virt_req_to_cxlio_FD extends virtual_sequence; 
+  `uvm_object_utils(virt_req_to_cxlio_FD)
+  
+  cxl_virtual_sqr v_sqr_h;
+  
+  req_to_cxlio_FD        req_to_cxlio_FD_h;
+
+  
+
+  extern function new(string name="virt_req_to_cxlio_FD");
+  extern task body();
+
+endclass
+
+/************** constructor*******************/
+function virt_req_to_cxlio_FD::new(string name="virt_req_to_cxlio_FD");
+  super.new(name);
+endfunction	
+
+/****************** body**************************/
+task virt_req_to_cxlio_FD:: body();
+  super.body();
+  req_to_cxlio_FD_h = req_to_cxlio_FD::type_id::create("req_to_cxlio_FD_h");
+  req_to_cxlio_FD_h.start(req_pcie_agent_sqr_h);
+endtask 
+
 
 

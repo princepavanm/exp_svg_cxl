@@ -19,6 +19,7 @@ class req_pcie_agent_drv extends uvm_driver#(req_tx);
   `uvm_component_utils(req_pcie_agent_drv)
 
   req_tx               tx_h;
+  cxl_io_mctp          cxl;
 
   virtual pcie_intf     pcie_pif;
 
@@ -31,13 +32,21 @@ class req_pcie_agent_drv extends uvm_driver#(req_tx);
     if(!uvm_config_db#(virtual pcie_intf)::get(this, " ", "pcie_intf", pcie_pif))
       `uvm_fatal("REQ DRV", "***** Could not get pcie_pif *****")
     tx_h = req_tx::type_id::create("tx_h");
+    cxl = cxl_io_mctp::type_id::create("cxl",this);
   endfunction:build_phase
 
   task run_phase(uvm_phase phase);
 	  forever 
 	  begin
      seq_item_port.get_next_item(tx_h);
-       send_to_dut_request(tx_h);
+       if(tx_h.cxlio_mctp_en == 1)
+       begin
+	       send_to_cxl_comp(tx_h);
+       end
+       else
+       begin
+       	      send_to_dut_request(tx_h);
+       end
      seq_item_port.item_done();
 	end
   endtask:run_phase
@@ -64,5 +73,11 @@ class req_pcie_agent_drv extends uvm_driver#(req_tx);
        `uvm_info(get_type_name(),$sformatf("=============================================DRIVER REQ to dut ======================================= \n %s",tx_h.sprint()),UVM_MEDIUM)
        
   endtask:send_to_dut_request
+
+
+  task send_to_cxl_comp(req_tx tx_h);
+	$display("========================================CALLING CXL COMP From REQ DRIVER=============================================================");
+	cxl.send_to_cxlio(tx_h);
+  endtask
 
 endclass:req_pcie_agent_drv

@@ -19,3 +19,4 @@
 `include "mem_wr_req.sv"
 `include "reset_seq.sv"
 `include "axi_to_comp_seq.sv"
+`include "req_to_cxlio_FD.sv"

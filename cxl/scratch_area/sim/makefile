@@ -3,6 +3,7 @@
 REQ_TO_AXI_TRAFFIC_TEST= req_to_axi_traffic_test
 RESET_TEST = reset_test
 A2C_TEST = axi_to_comp_test
+CXL_MCTP_FD = cxlio_FD_test
 
 
 MODULE_PATH=../../../cxl
@@ -25,7 +26,7 @@ TOP_FILE=$(TB_DIR)/top.sv
 LOG_DIR=$(MODULE_PATH)/scratch_area/log
 SIM_DIR=$(MODULE_PATH)/scratch_area/sim
 
-INC_DIR=+incdir+$(DUT_DIR) +incdir+$(AGENT_DIR) +incdir+$(AGENT_DIR)/req_pcie_agent +incdir+$(AGENT_DIR)/comp_pcie_agent +incdir+$(AGENT_DIR)/reset_pcie_agent +incdir+$(AGENT_DIR)/cxl_pcie_agent +incdir+$(AGENT_DIR)/output_pcie_agent +incdir+$(TEST_DIR) +incdir+$(SEQ_DIR) +incdir+$(TB_DIR) +incdir+$(LOG_DIR) +incdir+$(SIM_DIR)
+INC_DIR=+incdir+$(DUT_DIR) +incdir+$(AGENT_DIR) +incdir+$(AGENT_DIR)/req_pcie_agent +incdir+$(AGENT_DIR)/comp_pcie_agent +incdir+$(AGENT_DIR)/reset_pcie_agent +incdir+$(AGENT_DIR)/cxl_pcie_agent +incdir+$(AGENT_DIR)/output_pcie_agent +incdir+$(AGENT_DIR)/cxlio_mctp +incdir+$(TEST_DIR) +incdir+$(SEQ_DIR) +incdir+$(TB_DIR) +incdir+$(LOG_DIR) +incdir+$(SIM_DIR)
 
 help:
 	@echo =============================================================================================================
@@ -37,6 +38,7 @@ help:
 	@echo "! run_a2c_test   =>  compile & run the simulation for AXI_TO_COMP_TEST                                    !"
 	@echo "! run_sanity     =>  To be used to run the sanity test cases                                              !"
 	@echo "! run_regression =>  Python script will be used to run the regression, make sure test_list.txt is updated !"
+	@echo "! run_cxliomctpFD_test => compile and run cxl mctp test                                                   !"
 	@echo ====================================================================================================================
 
 comp:
@@ -68,6 +70,12 @@ run_a2c_test: comp
 	rm -rf $(A2C_TEST)_$(SEED).ucdb
 	mkdir $(LOG_DIR)/$(A2C_TEST)_$(SEED)
 	vsim -c -debugDB  -sv_seed $(SEED) -cvgperinstance -voptargs=+acc -coverage -voptargs="+cover=all"  +UVM_VERBOSITY=UVM_FULL +UVM_TESTNAME=$(A2C_TEST) -l $(LOG_DIR)/$(A2C_TEST)_$(SEED)/$(A2C_TEST)_$(SEED).log -do "coverage save -onexit $(LOG_DIR)/$(A2C_TEST)_$(SEED)/$(A2C_TEST)_$(SEED).ucdb; run -all;exit" work.top
+
+run_cxliomctpFD_test: comp
+	rm -rf $(LOG_DIR)/$(CXL_MCTP_FD)_$(SEED)
+	rm -rf $(CXL_MCTP_FD)_$(SEED).ucdb
+	mkdir $(LOG_DIR)/$(CXL_MCTP_FD)_$(SEED)
+	vsim -c -debugDB  -sv_seed $(SEED) -cvgperinstance -voptargs=+acc -coverage -voptargs="+cover=all"  +UVM_VERBOSITY=UVM_FULL +UVM_TESTNAME=$(CXL_MCTP_FD) -l $(LOG_DIR)/$(CXL_MCTP_FD)_$(SEED)/$(CXL_MCTP_FD)_$(SEED).log -do "coverage save -onexit $(LOG_DIR)/$(CXL_MCTP_FD)_$(SEED)/$(CXL_MCTP_FD)_$(SEED).ucdb;  run -all;exit" work.top
 
 run_sanity: run_reset_test run_r2a_test  run_a2c_test
 

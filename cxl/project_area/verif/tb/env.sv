@@ -26,6 +26,7 @@ class cxl_env extends uvm_env;
   reset_pcie_agent	reset_pcie_agent_h;
   cxl_pcie_agent	cxl_pcie_agent_h;
   axi_agent             axi_agent_h;
+  cxl_io_mctp           cxl_io_mctp_h;
   
   
   cxl_virtual_sqr 	 v_sqr_h;
@@ -46,6 +47,7 @@ function void build_phase(uvm_phase phase);
     cxl_pcie_agent_h = cxl_pcie_agent::type_id::create("cxl_pcie_agent_h", this);
     axi_agent_h = axi_agent::type_id::create("axi_agent_h", this);
     cxl_sbd_h = cxl_sbd::type_id::create("cxl_sbd_h", this);
+    cxl_io_mctp_h = cxl_io_mctp::type_id::create("cxl_io_mctp_h",this);
 
   endfunction:build_phase
 
