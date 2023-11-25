@@ -26,12 +26,13 @@ class req_pcie_agent_mon extends uvm_monitor;
 //*************** constructor*************************
   function new(string name="req_pcie_agent_mon", uvm_component parent=null);
     super.new(name, parent);
+     
   endfunction:new
   
 // ********************* build phase *******************
   function void build_phase(uvm_phase phase);
     super.build_phase(phase);
- //   req_pcie_agent_mon_port = new("req_pcie_agent_mon_port", this);
+    req_pcie_agent_mon_port = new("req_pcie_agent_mon_port", this);
     if(!uvm_config_db#(virtual pcie_intf)::get(this, " ", "pcie_intf", pcie_pif))
       `uvm_fatal("DRV", "***** Could not get pcie_pif *****")
 
@@ -52,6 +53,7 @@ task run_phase(uvm_phase phase);
   		begin
  			 collect_packet_intf;
 			 @(pcie_pif.mon_cb);
+		req_pcie_agent_mon_port.write(req);
     	        end  	
 endtask:run_phase
 

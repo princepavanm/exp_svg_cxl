@@ -57,18 +57,16 @@ function void  connect_phase(uvm_phase phase);
     forever
     begin
 	    collect_packet_axi_intf(req);
-	   
+	  axi_agent_mon_port.write(req); 
+//	`uvm_info(get_type_name(),$sformatf("=============================================AXI MONITOR TO SCB======================================= \n %s",req.sprint()),UVM_MEDIUM)
     end
    
   endtask:run_phase
 // ***** collect data from intf********************
 task collect_packet_axi_intf(axi_agent_tx req);
-        
-
- 
-
+   
    @((pcie_pif.clk) && pcie_pif.rst ==0)
-   if(pcie_pif.axi_mon_cb.m_axi_awready || pcie_pif.axi_mon_cb.m_axi_wready || pcie_pif.axi_mon_cb.m_axi_wready)
+  // if(pcie_pif.axi_mon_cb.m_axi_awready || pcie_pif.axi_mon_cb.m_axi_wready || pcie_pif.axi_mon_cb.m_axi_wready)
    begin
    	req.m_axi_awid	              = pcie_pif.axi_mon_cb.m_axi_awid;    
    	req.m_axi_awaddr	      = pcie_pif.axi_mon_cb.m_axi_awaddr;
@@ -105,8 +103,9 @@ task collect_packet_axi_intf(axi_agent_tx req);
    	req.m_axi_rlast	              = pcie_pif.axi_mon_cb.m_axi_rlast;
    	req.m_axi_rvalid	      = pcie_pif.axi_mon_cb.m_axi_rvalid;
    	req.m_axi_rready	      = pcie_pif.axi_mon_cb.m_axi_rready;
-	`uvm_info(get_type_name(),$sformatf("=============================================AXI MONITOR======================================= \n %s",req.sprint()),UVM_MEDIUM)
+
+//	`uvm_info(get_type_name(),$sformatf("=============================================AXI MONITOR from dut======================================= \n %s",req.sprint()),UVM_MEDIUM)
    end
 
-endtask :collect_packet_axi_intf
+ endtask :collect_packet_axi_intf
 endclass:axi_agent_mon
