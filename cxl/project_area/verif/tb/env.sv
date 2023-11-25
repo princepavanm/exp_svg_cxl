@@ -63,6 +63,8 @@ function void build_phase(uvm_phase phase);
 
 //req_pcie_agent_h.mon_h.req_pcie_agent_mon_port.connect(cxl_sbd_h.imp_req_tx);
 // axi_agent_h.mon_h.axi_agent_mon_port.connect(cxl_sbd_h.imp_axi_agent_tx);
+  req_pcie_agent_h.mon_h.req_pcie_agent_mon_port.connect(cxl_sbd_h.req_txfifo.analysis_export);
+    axi_agent_h.mon_h.axi_agent_mon_port.connect(cxl_sbd_h.axi_agent_txfifo.analysis_export);
 
 endfunction:connect_phase
 

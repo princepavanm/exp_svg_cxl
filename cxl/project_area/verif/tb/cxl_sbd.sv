@@ -95,16 +95,16 @@ endtask:run_phase
 task compare_logic();
 //if(req_tx_queue.size() && axi_agent_tx_queue.size())
 //	begin
-//	req_tx_scb_h=req_tx_queue.pop_back();
+	req_tx_scb_h=req_tx_queue.pop_back();
 //            			`uvm_info(get_type_name(),$sformatf(" REQ SCBD COMPARE req_tx_scb_h, \n  %s",req_tx_scb_h.sprint()),UVM_LOW)
-//	axi_agent_tx_scb_h=axi_agent_tx_queue.pop_back();
+	axi_agent_tx_scb_h=axi_agent_tx_queue.pop_back();
 // 			      `uvm_info(get_type_name(),$sformatf(" AXI SCBD COMPARE axi_agent_tx_scb_h, \n %s",axi_agent_tx_scb_h.sprint()),UVM_LOW)
 //	end
 //else			      
-	begin
+//	begin
 	//	if(req_tx_scb_h.rx_req_tlp_data == axi_agent_tx_scb_h.m_axi_wdata)
-		if(req_txfifo.rx_req_tlp_data == axi_agent_txfifo.m_axi_wdata)
-      			begin // data_match_begin 
+	//	if(req_txfifo.rx_req_tlp_data == axi_agent_txfifo.m_axi_wdata)
+      	//		begin // data_match_begin 
        		 
 //		`uvm_info(get_type_name(),$sformatf("=============================================REQ SCBD COMPARE MATCHED ======================================= \n %s",req_tx_scb_h.sprint()),UVM_MEDIUM)
 
@@ -112,31 +112,31 @@ task compare_logic();
 
   			//      `uvm_info(get_type_name(),$sformatf(" DATA IS MATCHED",),UVM_LOW)
 	
-			  $display("\n--------------------------------------------------------------");
-       		 	$display($time,,"AXI SCB :: rx_req_tlp_data = %0h, m_axi_wdata = %0h",req_tx_scb_h.rx_req_tlp_data,axi_agent_tx_scb_h.m_axi_wdata);
-       		 	$display($time,,"AXI SCB ---> Data matched");
+//			  $display("\n--------------------------------------------------------------");
+//       		 	$display($time,,"AXI SCB :: rx_req_tlp_data = %0h, m_axi_wdata = %0h",req_tx_scb_h.rx_req_tlp_data,axi_agent_tx_scb_h.m_axi_wdata);
+ //      		 	$display($time,,"AXI SCB ---> Data matched");
        		 			//	pass++;total++;
        		 //	$display($time,,"AXI SCB  ---> No. Of Match   =%0d",pass);
-       		 	$display("--------------------------------------------------------------\n");
+ //      		 	$display("--------------------------------------------------------------\n");
 			
-      			end // data_match_end
-      		else
+//      			end // data_match_end
+  //    		else
   			     
-      			begin //data_mismatch_begin
+ //     			begin //data_mismatch_begin
   			  
 	    //   	`uvm_info(get_type_name(),$sformatf("=============================================REQ SCBD COMPARE MISMATCHED ======================================= \n %s",req_tx_scb_h.sprint()),UVM_MEDIUM)
 
 	//	`uvm_info(get_type_name(),$sformatf("=============================================AXI SCBD COMPARE MISMATCHED ======================================= \n %s",axi_agent_tx_scb_h.sprint()),UVM_MEDIUM)
 	
 	     //	`uvm_info(get_type_name(),$sformatf(" DATA IS MISMATCHED",),UVM_LOW)
-        		$display("\n--------------------------------------------------------------");
-        		$display($time,,"AXI SCB :: rx_req_tlp_data = %0h, m_axi_wdata = %0h",req_tx_scb_h.rx_req_tlp_data,axi_agent_tx_scb_h.m_axi_wdata);
-        		$display($time,,"AXI SCB ---> Data mismatched");
+//        		$display("\n--------------------------------------------------------------");
+//        		$display($time,,"AXI SCB :: rx_req_tlp_data = %0h, m_axi_wdata = %0h",req_tx_scb_h.rx_req_tlp_data,axi_agent_tx_scb_h.m_axi_wdata);
+ //       		$display($time,,"AXI SCB ---> Data mismatched");
 					//	fail++;total++;
         	//	$display($time,,"AXI SCB ---> No. Of Mismatch=%0d",fail);
         		$display("--------------------------------------------------------------\n");
-      			end // data_mismatch_end
-	end
+  //    			end // data_mismatch_end
+//	end
 //end
   
 endtask
