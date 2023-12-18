@@ -81,6 +81,13 @@ logic                                       m_axi_rlast;
 logic                                       m_axi_rvalid;
 logic                                       m_axi_rready;
 
+//CXLIO Signals
+logic [`TLP_DATA_WIDTH-1:0]               cxlio_mctp_req_data;
+logic [`TLP_SEG_COUNT*`TLP_HDR_WIDTH-1:0] cxlio_mctp_req_hdr;
+logic                                     cxlio_mctp_en;
+logic [191:0]                             cxlio_mctp_rsp_pkt;
+
+
 //=====================================================================
 //request driver clocking block
 //=====================================================================
@@ -240,6 +247,32 @@ endclocking
 
 
 //=====================================================================
+//CXLIO driver clocking block
+//=====================================================================
+ clocking cxlio_drv@(posedge clk);
+  default input #0 output #0;
+  output       cxlio_mctp_req_data;
+  output       cxlio_mctp_req_hdr;
+  output       cxlio_mctp_en;
+  output       cxlio_mctp_rsp_pkt;
+endclocking 
+
+
+//=====================================================================
+//CXLIO mon clocking block
+//=====================================================================
+ clocking cxlio_mon@(posedge clk);
+  default input #0 output #0;
+  input       cxlio_mctp_req_data;
+  input       cxlio_mctp_req_hdr;
+  input       cxlio_mctp_en;
+  input       cxlio_mctp_rsp_pkt;
+endclocking 
+
+
+
+
+//=====================================================================
 //Modport's
 //=====================================================================
  modport mon_mp(clocking mon_cb);
@@ -248,5 +281,6 @@ endclocking
  modport comp_drv_mp(clocking comp_drv_cb);
  modport comp_mon_mp(clocking comp_mon);
  modport axi_mon_mp(clocking axi_mon_cb);
-
+ modport cxlio_drv_mp(clocking cxlio_drv);
+ modport cxlio_mon_mp(clocking cxlio_mon);
 endinterface:pcie_intf

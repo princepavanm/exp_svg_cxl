@@ -16,7 +16,7 @@
 class cxl_base_seq extends uvm_sequence;
 
   `uvm_object_utils(cxl_base_seq)
-req_tx req;
+   req_tx req;
   function new(string name="cxl_base_seq");
     super.new(name);
   endfunction

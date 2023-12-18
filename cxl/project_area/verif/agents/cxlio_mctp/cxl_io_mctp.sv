@@ -2,11 +2,11 @@
 // Company:  Expolog Technologies.
 //           Copyright (c) 2023 by Expolog Technologies, Inc. All rights reserved.
 //
-// Engineer : 
+// Engineer : Shriharsh.S.Joshi
 // Revision tag :
 // Module Name      :    
 // Project Name      : 
-// component name : 
+// component name : cxl_io_mctp
 // Description: 
 //
 //
@@ -19,7 +19,11 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 
-
+`define PREP_EP_DISCOV  2'b00
+`define EP_DISCOV       2'b01
+`define SET_EP_ID       2'b00
+`define DISCOVERED      1'b1
+`define UNDISCOVERED    1'b0
 
 
 
@@ -64,8 +68,13 @@ class cxl_io_mctp extends uvm_component;
   bit [4:0]     M_PL_INST_ID;
   bit [7:0]     M_PL_COMM_CODE;
   bit [7:0]     M_PL_COMPL_CODE;
-
-  req_tx             tx_h;
+  bit [31:0]    M_PL_DATA;
+  bit [15:0]    PCIE_DEV_ID = 16'hCAFE;
+  bit [191:0]   RESPONSE_PKT;
+  bit           DISCOVERY_FLAG = `DISCOVERED;
+  cxl_tx             tx_h;
+  
+ // DISCOVERY_FLAG = `DISCOVERED;
 
   function new(string name="cxl_io_mctp", uvm_component parent=null);
     super.new(name, parent);
@@ -77,31 +86,33 @@ class cxl_io_mctp extends uvm_component;
 
 
 
-  extern task send_to_cxlio(input req_tx tx_h);
-  extern task packet_parsing(bit [127:0]tlp_data,bit [`TLP_SEG_COUNT*`TLP_HDR_WIDTH-1:0]tlp_hdr);
-  extern function void  packet_valid_check(bit[127:0] parsed_data) ; 
+  extern task send_to_cxlio(input cxl_tx tx_h);
+  extern function bit[191:0] get_response_cxlio();
+  extern task packet_parsing(bit [63:0]tlp_data,bit [`TLP_SEG_COUNT*`TLP_HDR_WIDTH-1:0]tlp_hdr);
+  extern function int  packet_valid_check(bit[191:0] parsed_data) ; 
+  extern function void  packet_operations(bit[191:0] parsed_data) ; 
+  extern function void  generate_response_packet(bit[191:0] parsed_data,bit[1:0] status) ; 
   extern function void  print_packet_valid(); 
   extern function void  print_packet_invalid(); 
 endclass:cxl_io_mctp
 
 
-task cxl_io_mctp::send_to_cxlio(input req_tx tx_h);
-	bit [127:0] data;
+task cxl_io_mctp::send_to_cxlio(input cxl_tx tx_h);
+	bit [63:0] data;
 	bit [`TLP_SEG_COUNT*`TLP_HDR_WIDTH-1:0] header;
 
-	$display("==================IN CXL.io COMPONENT====================");
-	tx_h.print();
-	header = tx_h.rx_req_tlp_hdr;
-	data   = tx_h.rx_req_tlp_data[255:128];
+	$display("=============================================CXLIO COMPONENT =======================================  ");
+	header = tx_h.cxlio_mctp_req_hdr;
+	data   = tx_h.cxlio_mctp_req_data[255:191];
 
 	packet_parsing(data,header);
 endtask: send_to_cxlio
 
-task cxl_io_mctp::packet_parsing(bit [127:0] tlp_data,bit [`TLP_SEG_COUNT*`TLP_HDR_WIDTH-1:0] tlp_hdr);
+task cxl_io_mctp::packet_parsing(bit [63:0] tlp_data,bit [`TLP_SEG_COUNT*`TLP_HDR_WIDTH-1:0] tlp_hdr);
 
  
- bit [127:0]        parsed_data;
-
+ bit [191:0]        parsed_data;
+ int                var1;
 
  P_R1             = tlp_hdr[127];
  P_FMT            = tlp_hdr[126:125];
@@ -130,52 +141,145 @@ task cxl_io_mctp::packet_parsing(bit [127:0] tlp_data,bit [`TLP_SEG_COUNT*`TLP_H
  M_PKT_SEQ        = tlp_hdr[5:4];
  M_TO             = tlp_hdr[3];
  M_MSG_TAG        = tlp_hdr[2:0];
+ M_PL_IC          = tlp_data[63];
+ M_PL_MSG_TYP     = tlp_data[62:56]; 
+ M_PL_RQ          = tlp_data[55];
+ M_PL_D           = tlp_data[54];
+ M_PL_R1          = tlp_data[53];
+ M_PL_INST_ID     = tlp_data[52:48];
+ M_PL_COMM_CODE   = tlp_data[47:40];
+ M_PL_COMPL_CODE  = tlp_data[39:32];
+ M_PL_DATA        = tlp_data[31:0];
 
 
- $display("=============================PACKET DETAILS================================="); 
- $display("R1 = %d",P_R1);
- $display("Fmt = %d",P_FMT);
- $display("Type = %d",P_TYPE);
- $display("R2 = %d",P_R2);
- $display("TC = %d",P_TC);
- $display("R3 = %d",P_R3);
- $display("TD = %d",P_TD);
- $display("EP = %d",P_EP);
- $display("Attr = %d",P_ATTR);
- $display("R4 = %d",P_R4);
- $display("Len = %d",P_LEN);
- $display("Req_ID = %d",P_REQ_ID);
- $display("R5 = %d",P_R5);
- $display("Pad_len = %d",P_PAD_LEN);
- $display("Mctp_vdm_code = %d",P_MCTP_VDM_CODE);
- $display("Msg_Code = %d",P_MESSAGE_CODE);
- $display("Tgt_ID = %d",P_TARGET_ID);
- $display("Vendor_ID = %d",P_VENDOR_ID);
- $display("M_R1 = %d",M_R1);
- $display("M_HDR_VER = %d",M_HDR_VER);
- $display("Dest_EID = %d",M_DEST_EID);
- $display("Source_EID = %d",M_SOURCE_EID);
- $display("SOM = %d",M_SOM);
- $display("EOM = %d",M_EOM);
- $display("Pkt_seq = %d",M_PKT_SEQ);
- $display("TO = %d",M_TO);
- $display("Msg_Tag = %d",M_MSG_TAG);
+ $display("=============================================PACKET DETAILS =======================================  ");
+ $display("R1 = %b",P_R1);
+ $display("Fmt = %b",P_FMT);
+ $display("Type = %b",P_TYPE);
+ $display("R2 = %b",P_R2);
+ $display("TC = %b",P_TC);
+ $display("R3 = %b",P_R3);
+ $display("TD = %b",P_TD);
+ $display("EP = %b",P_EP);
+ $display("Attr = %b",P_ATTR);
+ $display("R4 = %b",P_R4);
+ $display("Len = %b",P_LEN);
+ $display("Req_ID = %b",P_REQ_ID);
+ $display("R5 = %b",P_R5);
+ $display("Pad_len = %b",P_PAD_LEN);
+ $display("Mctp_vdm_code = %b",P_MCTP_VDM_CODE);
+ $display("Msg_Code = %b",P_MESSAGE_CODE);
+ $display("Tgt_ID = %b",P_TARGET_ID);
+ $display("Vendor_ID = %b",P_VENDOR_ID);
+ $display("M_R1 = %b",M_R1);
+ $display("M_HDR_VER = %b",M_HDR_VER);
+ $display("Dest_EID = %b",M_DEST_EID);
+ $display("Source_EID = %b",M_SOURCE_EID);
+ $display("SOM = %b",M_SOM);
+ $display("EOM = %b",M_EOM);
+ $display("Pkt_seq = %b",M_PKT_SEQ);
+ $display("TO = %b",M_TO);
+ $display("Msg_Tag = %b",M_MSG_TAG);
+ $display("IC = %b",M_PL_IC);
+ $display("PL_MSG_TYP = %b",M_PL_MSG_TYP);
+ $display("RQ = %b",M_PL_RQ);
+ $display("D = %b",M_PL_D);
+ $display("PL_R1 = %b",M_PL_R1);
+ $display("INST_ID = %b",M_PL_INST_ID);
+ $display("Command Code = %b",M_PL_COMM_CODE);
+ $display("Completion Code = %b",M_PL_COMPL_CODE);
+ $display("Data = %b",M_PL_DATA);
 
- parsed_data = {P_R1,P_FMT,P_TYPE,P_R2,P_TC,P_R3,P_TD,P_EP,P_ATTR,P_R4,P_LEN,P_REQ_ID,P_R5,P_PAD_LEN,P_MCTP_VDM_CODE,P_MESSAGE_CODE,P_TARGET_ID,P_VENDOR_ID,M_R1,M_HDR_VER,M_DEST_EID,M_SOURCE_EID,M_SOM,M_EOM,M_PKT_SEQ,M_TO,M_MSG_TAG};
+ parsed_data = {P_R1,P_FMT,P_TYPE,P_R2,P_TC,P_R3,P_TD,P_EP,P_ATTR,P_R4,P_LEN,P_REQ_ID,P_R5,P_PAD_LEN,P_MCTP_VDM_CODE,P_MESSAGE_CODE,P_TARGET_ID,P_VENDOR_ID,M_R1,M_HDR_VER,M_DEST_EID,M_SOURCE_EID,M_SOM,M_EOM,M_PKT_SEQ,M_TO,M_MSG_TAG,M_PL_IC,M_PL_MSG_TYP,M_PL_RQ,M_PL_D,M_PL_R1,M_PL_INST_ID,M_PL_COMM_CODE,M_PL_COMPL_CODE,M_PL_DATA};
  
- packet_valid_check(parsed_data);
- print_packet_invalid();
- print_packet_valid();
+ var1 = packet_valid_check(parsed_data);
+ if(var1 == 0)
+ begin
+	 //`uvm_fatal();
+ end
+ else
+ begin
+ 	packet_operations(parsed_data);
+ end
 endtask:packet_parsing
 
-function void cxl_io_mctp:: packet_valid_check(bit[127:0] parsed_data);
- {P_R1,P_FMT,P_TYPE,P_R2,P_TC,P_R3,P_TD,P_EP,P_ATTR,P_R4,P_LEN,P_REQ_ID,P_R5,P_PAD_LEN,P_MCTP_VDM_CODE,P_MESSAGE_CODE,P_TARGET_ID,P_VENDOR_ID,M_R1,M_HDR_VER,M_DEST_EID,M_SOURCE_EID,M_SOM,M_EOM,M_PKT_SEQ,M_TO,M_MSG_TAG} = parsed_data;
+function int cxl_io_mctp:: packet_valid_check(bit[191:0] parsed_data);
 
+int error;
+ {P_R1,P_FMT,P_TYPE,P_R2,P_TC,P_R3,P_TD,P_EP,P_ATTR,P_R4,P_LEN,P_REQ_ID,P_R5,P_PAD_LEN,P_MCTP_VDM_CODE,P_MESSAGE_CODE,P_TARGET_ID,P_VENDOR_ID,M_R1,M_HDR_VER,M_DEST_EID,M_SOURCE_EID,M_SOM,M_EOM,M_PKT_SEQ,M_TO,M_MSG_TAG,M_PL_IC,M_PL_MSG_TYP,M_PL_RQ,M_PL_D,M_PL_R1,M_PL_INST_ID,M_PL_COMM_CODE,M_PL_COMPL_CODE,M_PL_DATA} = parsed_data;
 
+error = 0;
  //Rules
- if(P_FMT != 0)
+ if(P_FMT != 3)
  begin
+	 `uvm_error(get_type_name (), $sformatf ("[MCTP] ERROR: Check Format field, should be equal to 0")); 
+	  error++;
+ end
+ if(P_TYPE[4:3] != 2'b10) 
+ begin
+	 `uvm_error(get_type_name (), $sformatf ("[MCTP] ERROR: Check Type[4:3] field, should be equal to 2"));
+	  error++;
+  end
+ if(P_TC != 3'b000) 
+ begin
+	 `uvm_error(get_type_name (), $sformatf ("[MCTP] ERROR: Check  TC field , should be equal to 0"));
+	  error++;
+  end
+ if(P_TD != 0) 
+ begin
+	 `uvm_error(get_type_name (), $sformatf ("[MCTP] ERROR: Check TD field, should be equal to 0"));
+	  error++;
+  end
+ if(P_EP != 0)  
+ begin
+	 `uvm_error(get_type_name (), $sformatf ("[MCTP] ERROR: Check EP field, should be equal to 0"));
+	  error++;
+  end
+ if(!(P_ATTR == 0 || P_ATTR == 1)) 
+ begin
+	 `uvm_error(get_type_name (), $sformatf ("[MCTP] ERROR: Check Attr field, should be equal to 0 or 1"));
+	  error++;
+ end
+ if(P_MCTP_VDM_CODE != 0) 
+ begin
+	 `uvm_error(get_type_name (), $sformatf ("[MCTP] ERROR: Check MCTP VDM CODE field, should be equal to 0"));
+	  error++;
+  end
+ if(P_MESSAGE_CODE != 8'b0111_1111) 
+ begin
+	 `uvm_error(get_type_name (), $sformatf ("[MCTP] ERROR: Check Message Code Vendor Defined field, should be equal to 0"));
+	  error++;
+  end
+ if(M_HDR_VER != 4'b0001) 
+ begin
+	 `uvm_error(get_type_name (), $sformatf ("[MCTP] ERROR: Check Header Version field, should be equal to 0"));
+	  error++;
+  end
+ if(M_PL_IC != 0) 
+ begin
+	 `uvm_error(get_type_name (), $sformatf ("[MCTP] ERROR: Check MCTP Payload IC field, should be equal to 0"));
+	  error++;
+ end
+ if(M_PL_MSG_TYP != 0) 
+ begin
+	 `uvm_error(get_type_name (), $sformatf ("[MCTP] ERROR: Check MCTP Payload MSG Type field, should be equal to 0"));
+	  error++;
+  end
 
+
+
+ //Signature Print
+ if(error == 0)
+ begin	
+	 $display("error = %d",error); 
+	 print_packet_valid();
+	 return 1;
+ end
+ else 
+ begin
+	$display("error = %d",error); 
+	print_packet_invalid();
+	return 0;
  end
 
 
@@ -185,18 +289,107 @@ function void cxl_io_mctp:: packet_valid_check(bit[127:0] parsed_data);
 endfunction
 
 
+function void cxl_io_mctp:: packet_operations(bit[191:0] parsed_data);
+bit[1:0] status;
+{P_R1,P_FMT,P_TYPE,P_R2,P_TC,P_R3,P_TD,P_EP,P_ATTR,P_R4,P_LEN,P_REQ_ID,P_R5,P_PAD_LEN,P_MCTP_VDM_CODE,P_MESSAGE_CODE,P_TARGET_ID,P_VENDOR_ID,M_R1,M_HDR_VER,M_DEST_EID,M_SOURCE_EID,M_SOM,M_EOM,M_PKT_SEQ,M_TO,M_MSG_TAG,M_PL_IC,M_PL_MSG_TYP,M_PL_RQ,M_PL_D,M_PL_R1,M_PL_INST_ID,M_PL_COMM_CODE,M_PL_COMPL_CODE,M_PL_DATA} = parsed_data;
+
+if(P_TYPE[2:0] == 3'b011 && M_DEST_EID == 8'hFF && M_TO == 1 && M_PL_RQ == 1 && M_PL_D == 0 && M_PL_COMM_CODE == 'h0B)
+begin
+	$display("|-------------------------------------------------------------------------------------------------------|");
+	$display("|                                BROADCAST MESSAGE TYPE DETECTED                                        |");
+	$display("|                        ===\"PREPARE FOR ENDPOINT DISCOVERY [COMMAND]\"===                               |");
+	$display("|-------------------------------------------------------------------------------------------------------|");
+	status = `PREP_EP_DISCOV;
+	DISCOVERY_FLAG = `UNDISCOVERED;
+	generate_response_packet(parsed_data,status);
+end
+
+
+else if(P_TYPE[2:0] == 3'b011 && M_DEST_EID == 8'hFF && M_TO == 1 && M_PL_RQ == 1 && M_PL_D == 0 && M_PL_COMM_CODE == 'h0C)
+begin
+	$display("|-------------------------------------------------------------------------------------------------------|");
+	$display("|                                BROADCAST MESSAGE TYPE DETECTED                                        |");
+	$display("|                              ===\"ENDPOINT DISCOVERY [COMMAND]\"===                                     |");
+	$display("|-------------------------------------------------------------------------------------------------------|");
+	status = `EP_DISCOV;
+	generate_response_packet(parsed_data,status);
+end
+
+else if(P_TYPE[2:0] == 3'b010 && M_DEST_EID == 0 && M_TO == 1 && M_PL_RQ == 1 && M_PL_D == 0 && M_PL_COMM_CODE == 'h01 && P_TARGET_ID == PCIE_DEV_ID )
+begin
+	$display("|-------------------------------------------------------------------------------------------------------|");
+	$display("|                                ROUTE BY ID MESSAGE TYPE DETECTED                                      |");
+	$display("|                               ===\"SET ENDPOINT ID [COMMAND]\"===                                       |");
+	$display("|-------------------------------------------------------------------------------------------------------|");
+	status = `SET_EP_ID;
+	DISCOVERY_FLAG = `DISCOVERED;
+	generate_response_packet(parsed_data,status);
+end
+
+endfunction
+
+function void cxl_io_mctp:: generate_response_packet(bit[191:0] parsed_data,bit[1:0] status);
+{P_R1,P_FMT,P_TYPE,P_R2,P_TC,P_R3,P_TD,P_EP,P_ATTR,P_R4,P_LEN,P_REQ_ID,P_R5,P_PAD_LEN,P_MCTP_VDM_CODE,P_MESSAGE_CODE,P_TARGET_ID,P_VENDOR_ID,M_R1,M_HDR_VER,M_DEST_EID,M_SOURCE_EID,M_SOM,M_EOM,M_PKT_SEQ,M_TO,M_MSG_TAG,M_PL_IC,M_PL_MSG_TYP,M_PL_RQ,M_PL_D,M_PL_R1,M_PL_INST_ID,M_PL_COMM_CODE,M_PL_COMPL_CODE,M_PL_DATA} = parsed_data;
+
+if(status == `PREP_EP_DISCOV)
+begin
+	P_REQ_ID = PCIE_DEV_ID;
+	M_DEST_EID = M_SOURCE_EID;
+	M_SOURCE_EID = 'h00;
+	M_TO =0;
+	M_PL_RQ = 0;
+	M_PL_D  = 0;
+	M_PL_COMPL_CODE = 0;
+	RESPONSE_PKT = {P_R1,P_FMT,P_TYPE,P_R2,P_TC,P_R3,P_TD,P_EP,P_ATTR,P_R4,P_LEN,P_REQ_ID,P_R5,P_PAD_LEN,P_MCTP_VDM_CODE,P_MESSAGE_CODE,P_TARGET_ID,P_VENDOR_ID,M_R1,M_HDR_VER,M_DEST_EID,M_SOURCE_EID,M_SOM,M_EOM,M_PKT_SEQ,M_TO,M_MSG_TAG,M_PL_IC,M_PL_MSG_TYP,M_PL_RQ,M_PL_D,M_PL_R1,M_PL_INST_ID,M_PL_COMM_CODE,M_PL_COMPL_CODE,M_PL_DATA};
+
+end
+
+else if(status == `EP_DISCOV)
+begin
+	P_REQ_ID = PCIE_DEV_ID;
+	M_DEST_EID = M_SOURCE_EID;
+	M_SOURCE_EID = 'h00;
+	M_TO =0;
+	M_PL_RQ = 0;
+	M_PL_D  = 0;
+	M_PL_COMPL_CODE = 0;
+	RESPONSE_PKT = {P_R1,P_FMT,P_TYPE,P_R2,P_TC,P_R3,P_TD,P_EP,P_ATTR,P_R4,P_LEN,P_REQ_ID,P_R5,P_PAD_LEN,P_MCTP_VDM_CODE,P_MESSAGE_CODE,P_TARGET_ID,P_VENDOR_ID,M_R1,M_HDR_VER,M_DEST_EID,M_SOURCE_EID,M_SOM,M_EOM,M_PKT_SEQ,M_TO,M_MSG_TAG,M_PL_IC,M_PL_MSG_TYP,M_PL_RQ,M_PL_D,M_PL_R1,M_PL_INST_ID,M_PL_COMM_CODE,M_PL_COMPL_CODE,M_PL_DATA};
+
+end
+
+
+else if(status == `SET_EP_ID)
+begin
+	P_TARGET_ID =  P_REQ_ID;
+        P_REQ_ID = PCIE_DEV_ID;
+	M_DEST_EID = M_SOURCE_EID;
+	M_SOURCE_EID = M_PL_DATA[23:16];
+	M_TO =0;
+	M_PL_RQ = 0;
+	M_PL_D  = 0;
+	M_PL_COMPL_CODE  = 0;
+	M_PL_DATA[7:0]   = 0;
+	M_PL_DATA[15:8]  = M_SOURCE_EID;
+	M_PL_DATA[23:16] = 0;
+	M_PL_DATA[31:24] = 0;
+	RESPONSE_PKT = {P_R1,P_FMT,P_TYPE,P_R2,P_TC,P_R3,P_TD,P_EP,P_ATTR,P_R4,P_LEN,P_REQ_ID,P_R5,P_PAD_LEN,P_MCTP_VDM_CODE,P_MESSAGE_CODE,P_TARGET_ID,P_VENDOR_ID,M_R1,M_HDR_VER,M_DEST_EID,M_SOURCE_EID,M_SOM,M_EOM,M_PKT_SEQ,M_TO,M_MSG_TAG,M_PL_IC,M_PL_MSG_TYP,M_PL_RQ,M_PL_D,M_PL_R1,M_PL_INST_ID,M_PL_COMM_CODE,M_PL_COMPL_CODE,M_PL_DATA};
+
+end
+
+endfunction
+
+function bit[191:0] cxl_io_mctp:: get_response_cxlio();
+	return RESPONSE_PKT;
+endfunction
 
 
 function void cxl_io_mctp:: print_packet_valid();
-	$display("|-----------------------------------------------------------|");
-	$display("|                                                           |");
-	$display("|                                                           |");
-	$display("|                                                           |");
-	$display("|                 PACKET IS VALID                           |");
-	$display("|                                                           |");
-	$display("|                                                           |");
-	$display("|                                                           |");
-	$display("|-----------------------------------------------------------|");
+	$display("|-------------------------------------------------------------------------------------------------------|");
+	$display("|                                                                                                       |");
+	$display("|                                   PACKET IS VALID                                                     |");
+	$display("|                                                                                                       |");
+	$display("|-------------------------------------------------------------------------------------------------------|");
+
 endfunction
 
 
@@ -204,14 +397,10 @@ endfunction
 
 
 function void cxl_io_mctp:: print_packet_invalid();
-	$display("|-----------------------------------------------------------|");
-	$display("|                                                           |");
-	$display("|                                                           |");
-	$display("|                                                           |");
-	$display("|                 PACKET IS INVALID                         |");
-	$display("|                                                           |");
-	$display("|                                                           |");
-	$display("|                                                           |");
-	$display("|-----------------------------------------------------------|");
+	$display("|-------------------------------------------------------------------------------------------------------|");
+	$display("|                                                                                                       |");
+	$display("|                                   PACKET IS INVALID                                                   |");
+	$display("|                                                                                                       |");
+	$display("|-------------------------------------------------------------------------------------------------------|");
 
 endfunction

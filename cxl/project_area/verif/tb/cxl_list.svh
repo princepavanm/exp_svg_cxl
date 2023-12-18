@@ -27,7 +27,6 @@
   
 
   `include "req_pcie_agent_tx.sv"
-  `include "cxl_io_mctp.sv"
   `include "req_pcie_agent_drv.sv"
   `include "req_pcie_agent_sqr.sv"
   `include "req_pcie_agent_cov.sv"
@@ -49,6 +48,7 @@
   `include "reset_pcie_agent.sv"
 
   `include "cxl_pcie_agent_tx.sv"
+  `include "cxl_io_mctp.sv"
   `include "cxl_pcie_agent_drv.sv"
   `include "cxl_pcie_agent_sqr.sv"
   `include "cxl_pcie_agent_cov.sv"

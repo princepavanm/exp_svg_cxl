@@ -75,7 +75,7 @@ run_cxliomctpFD_test: comp
 	rm -rf $(LOG_DIR)/$(CXL_MCTP_FD)_$(SEED)
 	rm -rf $(CXL_MCTP_FD)_$(SEED).ucdb
 	mkdir $(LOG_DIR)/$(CXL_MCTP_FD)_$(SEED)
-	vsim -c -debugDB  -sv_seed $(SEED) -cvgperinstance -voptargs=+acc -coverage -voptargs="+cover=all"  +UVM_VERBOSITY=UVM_FULL +UVM_TESTNAME=$(CXL_MCTP_FD) -l $(LOG_DIR)/$(CXL_MCTP_FD)_$(SEED)/$(CXL_MCTP_FD)_$(SEED).log -do "coverage save -onexit $(LOG_DIR)/$(CXL_MCTP_FD)_$(SEED)/$(CXL_MCTP_FD)_$(SEED).ucdb;  run -all;exit" work.top
+	vsim -c -debugDB  -sv_seed $(SEED) -cvgperinstance -voptargs=+acc -coverage -voptargs="+cover=all"  +UVM_VERBOSITY=UVM_MEDIUM +UVM_TESTNAME=$(CXL_MCTP_FD) -l $(LOG_DIR)/$(CXL_MCTP_FD)_$(SEED)/$(CXL_MCTP_FD)_$(SEED).log -do "coverage save -onexit $(LOG_DIR)/$(CXL_MCTP_FD)_$(SEED)/$(CXL_MCTP_FD)_$(SEED).ucdb;  run -all;exit" work.top
 
 run_sanity: run_reset_test run_r2a_test  run_a2c_test
 
