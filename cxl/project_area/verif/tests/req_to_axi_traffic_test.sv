@@ -41,7 +41,7 @@ task run_phase(uvm_phase phase);
 	virt_mem_wr_req_h=virt_mem_wr_req::type_id::create("virt_mem_wr_req_h");
 	v_rst_sq.start(env_h.v_sqr_h);
 	virt_mem_wr_req_h.start(env_h.v_sqr_h);
-	#1000;
+	#100;
 	phase.drop_objection(this);
 endtask
 endclass

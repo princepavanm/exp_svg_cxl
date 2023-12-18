@@ -64,7 +64,8 @@ class comp_pcie_agent_mon extends uvm_monitor;
                          tx_h.tx_cpl_tlp_sop      =        pcie_pif.comp_mon.tx_cpl_tlp_sop;
                          tx_h.tx_cpl_tlp_eop      =        pcie_pif.comp_mon.tx_cpl_tlp_eop;
                          tx_h.tx_cpl_tlp_ready    =        pcie_pif.comp_mon.tx_cpl_tlp_ready;
-			  
+//		 `uvm_info(get_type_name(),$sformatf("=============================================MONITOR COMP from dut ======================================= \n %s",tx_h.sprint()),UVM_MEDIUM)
+	  
 	    end
   endtask
 

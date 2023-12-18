@@ -11,7 +11,7 @@ bit                                       m_axi_awlock;
 bit [3:0]                                 m_axi_awcache;
 bit [2:0]                                 m_axi_awprot;
 bit                                       m_axi_awvalid;
-rand bit                                       m_axi_awready;
+rand bit                                  m_axi_awready;
 
 
 /*** write data channel signals ***/
@@ -20,12 +20,12 @@ bit [`AXI_DATA_WIDTH-1:0]                 m_axi_wdata;
 bit [`AXI_STRB_WIDTH-1:0]                 m_axi_wstrb;
 bit                                       m_axi_wlast;
 bit                                       m_axi_wvalid;
-rand bit                                       m_axi_wready;
+rand bit                                  m_axi_wready;
 
  /*** write response channel signals ***/
-rand bit [`AXI_ID_WIDTH-1:0]                   m_axi_bid;
-rand bit [1:0]                                 m_axi_bresp;
-rand bit                                       m_axi_bvalid;
+rand bit [`AXI_ID_WIDTH-1:0]              m_axi_bid;
+rand bit [1:0]                            m_axi_bresp;
+rand bit                                  m_axi_bvalid;
 bit                                       m_axi_bready;
 
 /*** read address cahnnel signals ***/
@@ -38,14 +38,14 @@ bit                                       m_axi_arlock;
 bit [3:0]                                 m_axi_arcache;
 bit [2:0]                                 m_axi_arprot;
 bit                                       m_axi_arvalid;
-rand bit                                       m_axi_arready;
+rand bit                                  m_axi_arready;
 
  /*** read data channel signals ***/
-rand bit [`AXI_ID_WIDTH-1:0]                   m_axi_rid;
-rand bit [`AXI_DATA_WIDTH-1:0]                 m_axi_rdata;
-rand bit [1:0]                                 m_axi_rresp;
-rand bit                                       m_axi_rlast;
-rand bit                                       m_axi_rvalid;
+rand bit [`AXI_ID_WIDTH-1:0]              m_axi_rid;
+rand bit [`AXI_DATA_WIDTH-1:0]            m_axi_rdata;
+rand bit [1:0]                            m_axi_rresp;
+rand bit                                  m_axi_rlast;
+rand bit                                  m_axi_rvalid;
 bit                                       m_axi_rready;
 
   `uvm_object_utils_begin(axi_agent_tx)
