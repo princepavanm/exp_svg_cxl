@@ -65,7 +65,7 @@ virtual task run_phase(uvm_phase phase);
 			//	req_tx_queue.push_front(req_tx_scb_h);
    		      	//	`uvm_info(get_type_name(),$sformatf(" After  calling req_txfifo get method"),UVM_LOW)
             	//		`uvm_info(get_type_name(),$sformatf(" Printing req_tx_scb_h, \n  %s",req_tx_scb_h.sprint()),UVM_LOW)
-      				`uvm_info(get_type_name(),$sformatf("=============================================req MONITOR SCBD ======================================= \n %s",req_tx_scb_h.sprint()),UVM_MEDIUM)
+      			//	`uvm_info(get_type_name(),$sformatf("=============================================req MONITOR SCBD ======================================= \n %s",req_tx_scb_h.sprint()),UVM_MEDIUM)
         		end
 //	#100;
 	//aaaa 
@@ -76,7 +76,7 @@ virtual task run_phase(uvm_phase phase);
        			    //    $display("Size of the req_txfifo Queue = %d", req_tx_queue.size);   
    			//	`uvm_info(get_type_name(),$sformatf(" After  calling axi_agent_txfifo get method"),UVM_LOW)
   			     // `uvm_info(get_type_name(),$sformatf(" Printing axi_agent_tx_scb_h, \n %s",axi_agent_tx_scb_h.sprint()),UVM_LOW)
-       				`uvm_info(get_type_name(),$sformatf("=============================================AXI MONITOR SCBD ======================================= \n %s",axi_agent_tx_scb_h.sprint()),UVM_MEDIUM)
+       			//	`uvm_info(get_type_name(),$sformatf("=============================================AXI MONITOR SCBD ======================================= \n %s",axi_agent_tx_scb_h.sprint()),UVM_MEDIUM)
        	      		end 
        		 join_any
 compare_logic();
