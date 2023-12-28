@@ -18,12 +18,12 @@
 // Additional Comments:
 //
 //////////////////////////////////////////////////////////////////////////////////
-
 `define PREP_EP_DISCOV  2'b00
 `define EP_DISCOV       2'b01
-`define SET_EP_ID       2'b00
+`define SET_EP_ID       2'b10
 `define DISCOVERED      1'b1
 `define UNDISCOVERED    1'b0
+`define ERROR_RESPONSE  2'b11
 
 
 
@@ -326,6 +326,17 @@ begin
 	generate_response_packet(parsed_data,status);
 end
 
+else
+begin
+	$display("|-------------------------------------------------------------------------------------------------------|");
+	$display("|                                THIS FEATURE IS NOT YET IMPLEMENTED                                    |");
+	$display("|                                ONLY FULL DISCOVERY IS IMPLEMENTED                                     |");
+	$display("|-------------------------------------------------------------------------------------------------------|");
+	status=`ERROR_RESPONSE;
+	generate_response_packet(parsed_data,status);
+end
+
+
 endfunction
 
 function void cxl_io_mctp:: generate_response_packet(bit[191:0] parsed_data,bit[1:0] status);
@@ -375,6 +386,19 @@ begin
 	RESPONSE_PKT = {P_R1,P_FMT,P_TYPE,P_R2,P_TC,P_R3,P_TD,P_EP,P_ATTR,P_R4,P_LEN,P_REQ_ID,P_R5,P_PAD_LEN,P_MCTP_VDM_CODE,P_MESSAGE_CODE,P_TARGET_ID,P_VENDOR_ID,M_R1,M_HDR_VER,M_DEST_EID,M_SOURCE_EID,M_SOM,M_EOM,M_PKT_SEQ,M_TO,M_MSG_TAG,M_PL_IC,M_PL_MSG_TYP,M_PL_RQ,M_PL_D,M_PL_R1,M_PL_INST_ID,M_PL_COMM_CODE,M_PL_COMPL_CODE,M_PL_DATA};
 
 end
+
+else if(status == `ERROR_RESPONSE)
+begin
+	P_REQ_ID = PCIE_DEV_ID;
+	M_DEST_EID = M_SOURCE_EID;
+	M_SOURCE_EID = 'h00;
+	M_TO =0;
+	M_PL_RQ = 0;
+	M_PL_D  = 0;
+	M_PL_COMPL_CODE = 1;
+	RESPONSE_PKT = {P_R1,P_FMT,P_TYPE,P_R2,P_TC,P_R3,P_TD,P_EP,P_ATTR,P_R4,P_LEN,P_REQ_ID,P_R5,P_PAD_LEN,P_MCTP_VDM_CODE,P_MESSAGE_CODE,P_TARGET_ID,P_VENDOR_ID,M_R1,M_HDR_VER,M_DEST_EID,M_SOURCE_EID,M_SOM,M_EOM,M_PKT_SEQ,M_TO,M_MSG_TAG,M_PL_IC,M_PL_MSG_TYP,M_PL_RQ,M_PL_D,M_PL_R1,M_PL_INST_ID,M_PL_COMM_CODE,M_PL_COMPL_CODE,M_PL_DATA};
+end
+
 
 endfunction
 
