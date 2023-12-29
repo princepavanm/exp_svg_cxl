@@ -54,6 +54,7 @@ class cxl_pcie_agent_mon extends uvm_monitor;
  		tx_h.cxlio_mctp_en        =   pcie_pif.cxlio_mon.cxlio_mctp_en;      
  		tx_h.cxlio_mctp_rsp_pkt   =   pcie_pif.cxlio_mon.cxlio_mctp_rsp_pkt; 
 		`uvm_info(get_type_name(),$sformatf("=============================================MONITOR CXL ======================================= \n %s",tx_h.sprint()),UVM_MEDIUM)
+		cxl_pcie_agent_mon_port.write(tx_h);
 	end
 
 

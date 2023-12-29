@@ -20,9 +20,14 @@ class cxl_sbd extends uvm_scoreboard;
   
   	req_tx               req_tx_scb_h;
 	axi_agent_tx	     axi_agent_tx_scb_h;
+	cxl_tx               cxl_tx_scb_h,temp;
 
 	req_tx          req_tx_queue[$];
 	axi_agent_tx    axi_agent_tx_queue[$];
+	cxl_tx          cxl_tx_queue[$];
+	bit[63:0]        data;
+	string           seq_chk="";
+	int              error =0;
 
 //	int pass,fail,check_req_tx,check_axi_agent_tx,check_tx,total;
 
@@ -30,19 +35,20 @@ class cxl_sbd extends uvm_scoreboard;
 
 uvm_tlm_analysis_fifo#(req_tx) req_txfifo;
 uvm_tlm_analysis_fifo#(axi_agent_tx) axi_agent_txfifo;
-
+uvm_tlm_analysis_fifo#(cxl_tx) cxlio_txfifo;
 
   function new(string name="cxl_sbd", uvm_component parent);
     super.new(name, parent);
    req_txfifo = new("req_txfifo",this);
    axi_agent_txfifo = new("axi_agent_txfifo",this);
- 
+   cxlio_txfifo = new("cxlio_txfifo",this); 
   endfunction:new
 
   function void build_phase(uvm_phase phase);
     super.build_phase(phase);
-req_tx_scb_h  = req_tx::type_id::create("req_tx_scb_h",  this);
-axi_agent_tx_scb_h  = axi_agent_tx::type_id::create("axi_agent_tx_scb_h",  this);
+	req_tx_scb_h  = req_tx::type_id::create("req_tx_scb_h",  this);
+	axi_agent_tx_scb_h  = axi_agent_tx::type_id::create("axi_agent_tx_scb_h",  this);
+	cxl_tx_scb_h = cxl_tx::type_id::create("cxl_tx_scb_h",this);
     
     if(!uvm_config_db#(virtual pcie_intf)::get(this, " ", "pcie_intf", pcie_pif))
       `uvm_fatal("SCB", "***** Could not get pcie_pif *****")
@@ -78,8 +84,16 @@ virtual task run_phase(uvm_phase phase);
   			     // `uvm_info(get_type_name(),$sformatf(" Printing axi_agent_tx_scb_h, \n %s",axi_agent_tx_scb_h.sprint()),UVM_LOW)
        			//	`uvm_info(get_type_name(),$sformatf("=============================================AXI MONITOR SCBD ======================================= \n %s",axi_agent_tx_scb_h.sprint()),UVM_MEDIUM)
        	      		end 
+
+		        begin
+			     cxlio_txfifo.get(cxl_tx_scb_h);
+			     temp = new cxl_tx_scb_h;
+			     cxl_tx_queue.push_back(temp);
+			     `uvm_info(get_type_name(),$sformatf("=============================================CXLIO SCBD ======================================= \n %s",cxl_tx_scb_h.sprint()),UVM_MEDIUM)
+
+			end
        		 join_any
-compare_logic();
+//compare_logic();
 end
 
 //PAVAN /*
@@ -140,7 +154,207 @@ task compare_logic();
 //end
   
 endtask
+
+
+ extern function void check_phase(uvm_phase phase);
+ extern function void report_phase(uvm_phase phase);
 endclass:cxl_sbd
+
+
+function void cxl_sbd::check_phase(uvm_phase phase);
+	super.check_phase(phase);
+	if(cxl_tx_queue.size() && cxl_tx_queue[1].cxlio_mctp_en == 1)
+	begin
+		foreach(cxl_tx_queue[i])
+		begin
+			data = cxl_tx_queue[i].cxlio_mctp_req_data[255:191];		
+			if(data[47:40] == 'h0B)
+			begin
+				  seq_chk = {seq_chk,"a"};
+				 `uvm_info(get_type_name(),$sformatf("///// Prepare for Discovery Req Packet /////"),UVM_MEDIUM)
+
+				//Check the response packet to see if the transaction is SUCCESSFULL
+				if(cxl_tx_queue[i].cxlio_mctp_rsp_pkt[39:32] == 0)
+				begin
+					`uvm_info(get_type_name(),$sformatf("///// RESPONSE PACKET STATUS ---> SUCCESS /////"),UVM_MEDIUM)
+				end
+				else
+				begin
+					`uvm_error(get_type_name(),$sformatf ("///// RESPONSE PACKET STATUS ---> NOT SUCCESS Check Completion Code field in RSP pkt /////"));
+					 error++;
+				end
+
+				//Check if Dest EID in rsp packet is same as Source EID in req packet
+				if(cxl_tx_queue[i].cxlio_mctp_rsp_pkt[87:80] == cxl_tx_queue[i].cxlio_mctp_req_hdr[15:8])
+				begin
+					`uvm_info(get_type_name(),$sformatf("///// [RSP PKT] Dest EID matches [REQ PKT] Source EID /////"),UVM_MEDIUM)
+				end
+				else
+				begin
+					`uvm_error(get_type_name(), $sformatf ("///// [RSP PKT] Dest EID=%h do not match [REQ PKT] Source EID=%h /////",cxl_tx_queue[i].cxlio_mctp_rsp_pkt[87:80],cxl_tx_queue[i].cxlio_mctp_req_hdr[15:8]));
+					error++;
+				end
+
+
+				//Check Source EID in rsp packet is NULL
+				if(cxl_tx_queue[i].cxlio_mctp_rsp_pkt[79:72] == 0 )
+				begin
+					`uvm_info(get_type_name(),$sformatf("///// [RSP PKT] Source EID == NULL ///// "),UVM_MEDIUM)
+				end
+				else
+				begin
+					`uvm_error(get_type_name(), $sformatf ("///// [RSP PKT] Source EID != NULL/0 "));
+					error++;
+				end
+
+			end
+
+			else if(data[47:40] == 'h0C)
+			begin
+				seq_chk = {seq_chk,"b"} ;
+				`uvm_info(get_type_name(),$sformatf("///// Endpoint Discovery Req Packet /////"),UVM_MEDIUM)
+				//Check the response packet to see if the transaction is SUCCESSFULL
+				if(cxl_tx_queue[i].cxlio_mctp_rsp_pkt[39:32] == 0)
+				begin
+					`uvm_info(get_type_name(),$sformatf("///// RESPONSE PACKET STATUS ---> SUCCESS /////"),UVM_MEDIUM)
+				end
+				else
+				begin
+					`uvm_error(get_type_name(),$sformatf ("///// RESPONSE PACKET STATUS ---> NOT SUCCESS Check Completion Code field in RSP pkt /////"));
+					error++;
+				end
+
+				//Check if Dest EID in rsp packet is same as Source EID in req packet
+				if(cxl_tx_queue[i].cxlio_mctp_rsp_pkt[87:80] == cxl_tx_queue[i].cxlio_mctp_req_hdr[15:8])
+				begin
+					`uvm_info(get_type_name(),$sformatf("///// [RSP PKT] Dest EID matches [REQ PKT] Source EID /////"),UVM_MEDIUM)
+				end
+				else
+				begin
+					`uvm_error(get_type_name(), $sformatf ("///// [RSP PKT] Dest EID=%h do not match [REQ PKT] Source EID=%h /////",cxl_tx_queue[i].cxlio_mctp_rsp_pkt[87:80],cxl_tx_queue[i].cxlio_mctp_req_hdr[15:8]));
+					 error++;				
+			        end
+
+
+				//Check Source EID in rsp packet is NULL
+				if(cxl_tx_queue[i].cxlio_mctp_rsp_pkt[79:72] == 0 )
+				begin
+					`uvm_info(get_type_name(),$sformatf("///// [RSP PKT] Source EID == NULL ///// "),UVM_MEDIUM)
+				end
+				else
+				begin
+					`uvm_error(get_type_name(), $sformatf ("///// [RSP PKT] Source EID != NULL/0 "));
+					error++;
+				end
+
+			end
+
+			else if(data[47:40] == 'h01)
+			begin
+				seq_chk ={seq_chk,"c"};
+				`uvm_info(get_type_name(),$sformatf("///// Set Endpoint ID Req Packet /////"),UVM_MEDIUM)
+				//Check the response packet to see if the transaction is SUCCESSFULL
+				if(cxl_tx_queue[i].cxlio_mctp_rsp_pkt[39:32] == 0)
+				begin
+					`uvm_info(get_type_name(),$sformatf("///// RESPONSE PACKET STATUS ---> SUCCESS /////"),UVM_MEDIUM)
+				end
+				else
+				begin
+					`uvm_error(get_type_name(),$sformatf ("///// RESPONSE PACKET STATUS ---> NOT SUCCESS Check Completion Code field in RSP pkt /////"));
+					error++;
+				end
+
+
+				//Check if Dest EID in rsp packet is same as Source EID in req packet
+				if(cxl_tx_queue[i].cxlio_mctp_rsp_pkt[87:80] == cxl_tx_queue[i].cxlio_mctp_req_hdr[15:8])
+				begin
+					`uvm_info(get_type_name(),$sformatf("///// [Rsp] Dest EID matches [Req] Source EID /////"),UVM_MEDIUM)
+				end
+				else
+				begin
+					`uvm_error(get_type_name(), $sformatf ("///// [Rsp] Dest EID=%h do not match [Req] Source EID=%h /////",cxl_tx_queue[i].cxlio_mctp_rsp_pkt[87:80],cxl_tx_queue[i].cxlio_mctp_req_hdr[15:8]));
+					error++;
+				end
+				
+				//Check if rsp req_id matches the req tgt_id
+				if(cxl_tx_queue[i].cxlio_mctp_rsp_pkt[159:144] == cxl_tx_queue[i].cxlio_mctp_req_hdr[63:48])
+				begin
+					`uvm_info(get_type_name(),$sformatf("///// [Rsp] REQ ID matches [Req] Target ID /////"),UVM_MEDIUM)
+				end
+				else
+				begin
+					`uvm_error(get_type_name(), $sformatf ("///// [Rsp] REQ ID=%h do not match [Req] Target ID=%h /////",cxl_tx_queue[i].cxlio_mctp_rsp_pkt[159:144],cxl_tx_queue[i].cxlio_mctp_req_hdr[63:48]));
+					error++;
+				end
+
+				//Check if rsp packet source eid is same as assigned eid
+				if(cxl_tx_queue[i].cxlio_mctp_rsp_pkt[79:72] == cxl_tx_queue[i].cxlio_mctp_req_data[214:207])
+				begin
+					`uvm_info(get_type_name(),$sformatf("///// [Rsp] Source EID matches the Assigned EID = %h /////",cxl_tx_queue[i].cxlio_mctp_req_data[214:207]),UVM_MEDIUM)
+				end
+				else
+				begin
+					`uvm_error(get_type_name(), $sformatf ("[RSP] Source eid = %h, [REQ] assigned id = %h",cxl_tx_queue[i].cxlio_mctp_rsp_pkt[79:72],cxl_tx_queue[i].cxlio_mctp_req_data[214:207]));
+					error++;
+				end
+	
+				//Check for EID assignment status in the rsp packet
+				if(cxl_tx_queue[i].cxlio_mctp_rsp_pkt[5:4] == 0 )
+				begin
+					`uvm_info(get_type_name(),$sformatf("///// EID Assignment Status ---> EID Assignment Accepted /////"),UVM_MEDIUM)
+				end
+				else
+				begin
+					`uvm_error(get_type_name(), $sformatf ("///// EID Assignment Status ---> EID Assignment Not Accepted Please check the EID assignment status field of RSP pkt /////"));
+					error++;
+				end
+
+
+
+			end
+		end
+	end
+
+
+endfunction
+
+
+function void cxl_sbd:: report_phase(uvm_phase phase);
+	super.report_phase(phase);
+
+	if(cxl_tx_queue.size() && cxl_tx_queue[1].cxlio_mctp_en == 1)
+	begin
+		if(error == 0)
+		begin
+			if(seq_chk == "abc")
+			begin
+				$display("|------------------------------------------------------------------------------------------------|");
+				$display("|                               CXL.IO MCTP FULL DISCOVERY                                       |");
+				$display("|                                     SUCCESSFULL                                                |");
+				$display("|------------------------------------------------------------------------------------------------|");
+
+			end
+			else
+			begin
+				$display("|------------------------------------------------------------------------------------------------|");
+				$display("|                               CXL.IO MCTP FULL DISCOVERY                                       |");
+				$display("|                                     UNSUCCESSFULL                                              |");
+				$display("|                   Please Follow the ladder diagram from MCTP DMTF238 Doc                       |");
+				$display("|------------------------------------------------------------------------------------------------|");
+				`uvm_error(get_type_name(),$sformatf ("///// Please Follow the ladder diagram from MCTP DMTF238 Doc /////"));
+			end
+		end
+		else
+		begin
+				$display("|------------------------------------------------------------------------------------------------|");
+				$display("|                               CXL.IO MCTP FULL DISCOVERY                                       |");
+				$display("|                                     UNSUCCESSFULL                                              |");
+				$display("|                                 MISMOATCH CNT = %d                                             |",error);
+				$display("|------------------------------------------------------------------------------------------------|");
+
+		end
+	end
+endfunction
 
 
 
