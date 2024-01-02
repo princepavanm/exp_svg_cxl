@@ -95,7 +95,7 @@ class cxl_io_mctp extends uvm_component;
   extern function void  print_packet_invalid(); 
 endclass:cxl_io_mctp
 
-//The below task collects the seq item sent from the driver
+//The below task collects the seq item sent from the driver [API used in the Driver]
 task cxl_io_mctp::send_to_cxlio(input cxl_tx tx_h);
 	bit [63:0] data;
 	bit [`TLP_SEG_COUNT*`TLP_HDR_WIDTH-1:0] header;
@@ -108,7 +108,7 @@ task cxl_io_mctp::send_to_cxlio(input cxl_tx tx_h);
 endtask: send_to_cxlio
 
 
-//The below ask does the parsing of header and data packet [API used in the Driver]
+//The below ask does the parsing of header and data packet 
 task cxl_io_mctp::packet_parsing(bit [63:0] tlp_data,bit [`TLP_SEG_COUNT*`TLP_HDR_WIDTH-1:0] tlp_hdr);
 
  
