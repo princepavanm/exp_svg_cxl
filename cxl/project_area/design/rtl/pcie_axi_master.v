@@ -7,10 +7,12 @@
 /*
  * PCIe AXI Master
  */
+`include "ram_rtl.v"
 `include "pcie_tlp_demux.v"
 `include "pcie_axi_master_rd.v"
 `include "pcie_axi_master_wr.v"
 `include "pulse_merge.v"
+
 
 module pcie_axi_master #
 (
@@ -33,7 +35,11 @@ module pcie_axi_master #
     // Maximum AXI burst length to generate
     parameter AXI_MAX_BURST_LEN = 256,
     // Force 64 bit address
-    parameter TLP_FORCE_64_BIT_ADDR = 0
+    parameter TLP_FORCE_64_BIT_ADDR = 0,
+	// ram
+    parameter DATA = 8,
+    parameter ADDR = 8,
+    parameter DEPTH = 1024
 )
 (
     input  wire                                    clk,
@@ -109,7 +115,19 @@ module pcie_axi_master #
      * Status
      */
     output wire                                    status_error_cor,
-    output wire                                    status_error_uncor
+    output wire                                    status_error_uncor,
+
+
+
+    //*********************//
+    //      RAM           //
+    //********************//
+    //	input clk,
+	input wire write_enable,
+	input wire [ADDR-1:0]address,
+	input wire [DATA-1:0]data_in,
+	output wire [DATA-1:0]data_out
+
 );
 
 wire [1:0] status_error_uncor_int;
@@ -143,6 +161,23 @@ generate
     end
 
 endgenerate
+
+//----------------ram_instantiation---------------//
+ram #(
+    .ADDR(ADDR),
+    .DATA(DATA),
+    .DEPTH(DEPTH)
+    )
+ram_inst(
+	.clk(clk),
+	.write_enable(write_enable),
+	.address(address),
+	.data_in(data_in),
+	.data_out(data_out)
+
+);
+
+
 
 pcie_tlp_demux #(
     .PORTS(2),

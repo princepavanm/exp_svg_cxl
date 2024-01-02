@@ -16,7 +16,8 @@
 
 
 
-//FIXME need to add the switch in runcmd `timescale 1ns / 1ps
+//FIXME need to add the switch in runcmd 
+`timescale 1ns / 1ps
   `include "uvm_macros.svh"
   import uvm_pkg::*;
 
