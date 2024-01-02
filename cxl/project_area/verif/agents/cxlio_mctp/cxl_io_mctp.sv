@@ -74,7 +74,6 @@ class cxl_io_mctp extends uvm_component;
   bit           DISCOVERY_FLAG = `DISCOVERED;
   cxl_tx             tx_h;
   
- // DISCOVERY_FLAG = `DISCOVERED;
 
   function new(string name="cxl_io_mctp", uvm_component parent=null);
     super.new(name, parent);
@@ -96,7 +95,7 @@ class cxl_io_mctp extends uvm_component;
   extern function void  print_packet_invalid(); 
 endclass:cxl_io_mctp
 
-
+//The below task collects the seq item sent from the driver
 task cxl_io_mctp::send_to_cxlio(input cxl_tx tx_h);
 	bit [63:0] data;
 	bit [`TLP_SEG_COUNT*`TLP_HDR_WIDTH-1:0] header;
@@ -108,6 +107,8 @@ task cxl_io_mctp::send_to_cxlio(input cxl_tx tx_h);
 	packet_parsing(data,header);
 endtask: send_to_cxlio
 
+
+//The below ask does the parsing of header and data packet [API used in the Driver]
 task cxl_io_mctp::packet_parsing(bit [63:0] tlp_data,bit [`TLP_SEG_COUNT*`TLP_HDR_WIDTH-1:0] tlp_hdr);
 
  
@@ -196,7 +197,7 @@ task cxl_io_mctp::packet_parsing(bit [63:0] tlp_data,bit [`TLP_SEG_COUNT*`TLP_HD
  var1 = packet_valid_check(parsed_data);
  if(var1 == 0)
  begin
-	 //`uvm_fatal();
+	  `uvm_fatal(get_type_name (), $sformatf ("[MCTP] : PLEASE CHECK THE MCTP ERRORS AND RECTIFY THE PACKET"));
  end
  else
  begin
@@ -204,6 +205,8 @@ task cxl_io_mctp::packet_parsing(bit [63:0] tlp_data,bit [`TLP_SEG_COUNT*`TLP_HD
  end
 endtask:packet_parsing
 
+
+//The below fucntion checks whether the received packet is following the packet structure as per the DMTF 238 Document
 function int cxl_io_mctp:: packet_valid_check(bit[191:0] parsed_data);
 
 int error;
@@ -213,7 +216,7 @@ error = 0;
  //Rules
  if(P_FMT != 3)
  begin
-	 `uvm_error(get_type_name (), $sformatf ("[MCTP] ERROR: Check Format field, should be equal to 0")); 
+	 `uvm_error(get_type_name (), $sformatf ("[MCTP] ERROR: Check Format field, should be equal to 3")); 
 	  error++;
  end
  if(P_TYPE[4:3] != 2'b10) 
@@ -248,12 +251,12 @@ error = 0;
   end
  if(P_MESSAGE_CODE != 8'b0111_1111) 
  begin
-	 `uvm_error(get_type_name (), $sformatf ("[MCTP] ERROR: Check Message Code Vendor Defined field, should be equal to 0"));
+	 `uvm_error(get_type_name (), $sformatf ("[MCTP] ERROR: Check Message Code Vendor Defined field, should be equal to 7F"));
 	  error++;
   end
  if(M_HDR_VER != 4'b0001) 
  begin
-	 `uvm_error(get_type_name (), $sformatf ("[MCTP] ERROR: Check Header Version field, should be equal to 0"));
+	 `uvm_error(get_type_name (), $sformatf ("[MCTP] ERROR: Check Header Version field, should be equal to 1"));
 	  error++;
   end
  if(M_PL_IC != 0) 
@@ -289,7 +292,7 @@ error = 0;
 
 endfunction
 
-
+//The below function does the operations based on the packet received ***Currently it only supports Full Endpoint Discovery is implemented
 function void cxl_io_mctp:: packet_operations(bit[191:0] parsed_data);
 bit[1:0] status;
 {P_R1,P_FMT,P_TYPE,P_R2,P_TC,P_R3,P_TD,P_EP,P_ATTR,P_R4,P_LEN,P_REQ_ID,P_R5,P_PAD_LEN,P_MCTP_VDM_CODE,P_MESSAGE_CODE,P_TARGET_ID,P_VENDOR_ID,M_R1,M_HDR_VER,M_DEST_EID,M_SOURCE_EID,M_SOM,M_EOM,M_PKT_SEQ,M_TO,M_MSG_TAG,M_PL_IC,M_PL_MSG_TYP,M_PL_RQ,M_PL_D,M_PL_R1,M_PL_INST_ID,M_PL_COMM_CODE,M_PL_COMPL_CODE,M_PL_DATA} = parsed_data;
@@ -340,10 +343,12 @@ end
 
 endfunction
 
+
+//The below function constructs/generates response packet
 function void cxl_io_mctp:: generate_response_packet(bit[191:0] parsed_data,bit[1:0] status);
 {P_R1,P_FMT,P_TYPE,P_R2,P_TC,P_R3,P_TD,P_EP,P_ATTR,P_R4,P_LEN,P_REQ_ID,P_R5,P_PAD_LEN,P_MCTP_VDM_CODE,P_MESSAGE_CODE,P_TARGET_ID,P_VENDOR_ID,M_R1,M_HDR_VER,M_DEST_EID,M_SOURCE_EID,M_SOM,M_EOM,M_PKT_SEQ,M_TO,M_MSG_TAG,M_PL_IC,M_PL_MSG_TYP,M_PL_RQ,M_PL_D,M_PL_R1,M_PL_INST_ID,M_PL_COMM_CODE,M_PL_COMPL_CODE,M_PL_DATA} = parsed_data;
 
-if(status == `PREP_EP_DISCOV)
+if(status == `PREP_EP_DISCOV) // Generates response packet for Prepare for discovery packet
 begin
 	P_REQ_ID = PCIE_DEV_ID;
 	M_DEST_EID = M_SOURCE_EID;
@@ -356,7 +361,7 @@ begin
 
 end
 
-else if(status == `EP_DISCOV)
+else if(status == `EP_DISCOV) // Generates response packet for Endpoint Discovery packet
 begin
 	P_REQ_ID = PCIE_DEV_ID;
 	M_DEST_EID = M_SOURCE_EID;
@@ -370,7 +375,7 @@ begin
 end
 
 
-else if(status == `SET_EP_ID)
+else if(status == `SET_EP_ID) // Generates response packet for Set Endpoint ID packet
 begin
 	P_TARGET_ID =  P_REQ_ID;
         P_REQ_ID = PCIE_DEV_ID;
@@ -388,7 +393,7 @@ begin
 
 end
 
-else if(status == `ERROR_RESPONSE)
+else if(status == `ERROR_RESPONSE) // Generates Error response packet 
 begin
 	P_REQ_ID = PCIE_DEV_ID;
 	M_DEST_EID = M_SOURCE_EID;
@@ -403,11 +408,12 @@ end
 
 endfunction
 
+//The below function returns the response packet [API used in the Driver]
 function bit[191:0] cxl_io_mctp:: get_response_cxlio();
 	return RESPONSE_PKT;
 endfunction
 
-
+//Signature print if packet is valid
 function void cxl_io_mctp:: print_packet_valid();
 	$display("|-------------------------------------------------------------------------------------------------------|");
 	$display("|                                                                                                       |");
@@ -420,7 +426,7 @@ endfunction
 
 
 
-
+//Signature print if packet is invalid
 function void cxl_io_mctp:: print_packet_invalid();
 	$display("|-------------------------------------------------------------------------------------------------------|");
 	$display("|                                                                                                       |");
