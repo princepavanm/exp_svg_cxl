@@ -87,6 +87,86 @@ logic [`TLP_SEG_COUNT*`TLP_HDR_WIDTH-1:0] cxlio_mctp_req_hdr;
 logic                                     cxlio_mctp_en;
 logic [191:0]                             cxlio_mctp_rsp_pkt;
 
+//Fabric Manager
+//
+//clk and reset
+logic                            	fm_clk;
+logic                                    fm_rst;
+
+
+// CPI Interface Signals 
+// Global layer Signals (A2F) Agent to fabric
+
+logic                                               a2f_txcon_req;
+logic                                               a2f_rxcon_ack;
+logic                                               a2f_rxdiscon_nack;
+logic                                               a2f_rx_empty;
+logic                                               a2f_fatal;
+
+// Global layer Signals (F2A) Fabric to Agent
+
+ logic                                               f2a_txcon_req;
+ logic                                               f2a_rxcon_ack;
+ logic                                               f2a_rxdiscon_nack;
+ logic                                               f2a_rx_empty;
+ logic                                               f2a_fatal;
+
+// Request layer Signals (A2F) Agent to fabric
+
+logic                                       a2f_req_is_valid;
+logic                                       a2f_req_protocol_id;
+logic                                       a2f_req_header;
+
+
+// Request layer Signals (F2A) Fabric to Agent
+
+logic                                     f2a_req_is_valid;
+logic                                     f2a_req_protocol_id;
+logic                                     f2a_req_header;
+
+
+
+// Response layer Signals (A2F) Agent to Fabric
+
+ logic                                           a2f_rsp_is_valid;
+ logic                                           a2f_rsp_protocol_id;
+ logic                                           a2f_rsp_header;
+ logic                                           a2f_rsp_excrd_valid;
+
+
+// Response layer Signals (F2A) Fabric to Agent
+
+logic                                          f2a_rsp_is_valid;
+logic                                          f2a_rsp_protocol_id;
+logic                                          f2a_rsp_header;
+logic                                          f2a_rsp_excrd_valid;
+
+// Data layer Signals (A2F) Agent to Fabric
+
+logic                                         a2f_data_is_valid;             
+logic                                         a2f_data_protocol_id;
+logic                                         a2f_data_header;
+logic                                         a2f_data_body;
+logic                                         a2f_data_byte_en;
+logic                                         a2f_data_poison;
+logic                                         a2f_data_parity;
+logic                                         a2f_data_eop;
+
+
+// Data layer Signals (F2A) Fabric to Agent
+
+logic                                        f2a_data_is_valid;                   
+logic                                        f2a_data_protocol_id;
+logic                                        f2a_data_header;
+logic                                        f2a_data_body;
+logic                                        f2a_data_byte_en;
+logic                                        f2a_data_poison;
+logic                                        f2a_data_parity;
+logic                                        f2a_data_eop;
+
+
+
+
 
 //=====================================================================
 //request driver clocking block

@@ -27,6 +27,7 @@ class cxl_env extends uvm_env;
   cxl_pcie_agent	cxl_pcie_agent_h;
   axi_agent             axi_agent_h;
   cxl_io_mctp           cxl_io_mctp_h;
+  cxl_mem_agent		cxl_mem_agent_h;
   
   
   cxl_virtual_sqr 	 v_sqr_h;
@@ -45,6 +46,7 @@ function void build_phase(uvm_phase phase);
     comp_pcie_agent_h = comp_pcie_agent::type_id::create("comp_pcie_agent_h", this);
     reset_pcie_agent_h = reset_pcie_agent::type_id::create("reset_pcie_agent_h", this);
     cxl_pcie_agent_h = cxl_pcie_agent::type_id::create("cxl_pcie_agent_h", this);
+    cxl_mem_agent_h = cxl_mem_agent::type_id::create("cxl_mem_agent_h", this);
     axi_agent_h = axi_agent::type_id::create("axi_agent_h", this);
     cxl_sbd_h = cxl_sbd::type_id::create("cxl_sbd_h", this);
     cxl_io_mctp_h = cxl_io_mctp::type_id::create("cxl_io_mctp_h",this);
@@ -60,12 +62,14 @@ function void build_phase(uvm_phase phase);
     v_sqr_h.reset_pcie_agent_sqr_h = reset_pcie_agent_h.sqr_h;
     v_sqr_h.cxl_pcie_agent_sqr_h = cxl_pcie_agent_h.sqr_h;
     v_sqr_h.axi_agent_sqr_h = axi_agent_h.sqr_h;
+    v_sqr_h.cxl_mem_agent_sqr_h = cxl_mem_agent_h.sqr_h;
 
 //req_pcie_agent_h.mon_h.req_pcie_agent_mon_port.connect(cxl_sbd_h.imp_req_tx);
 // axi_agent_h.mon_h.axi_agent_mon_port.connect(cxl_sbd_h.imp_axi_agent_tx);
   req_pcie_agent_h.mon_h.req_pcie_agent_mon_port.connect(cxl_sbd_h.req_txfifo.analysis_export);
     axi_agent_h.mon_h.axi_agent_mon_port.connect(cxl_sbd_h.axi_agent_txfifo.analysis_export);
 cxl_pcie_agent_h.mon_h.cxl_pcie_agent_mon_port.connect(cxl_sbd_h.cxlio_txfifo.analysis_export);
+//cxl_mem_agent_h.mon_h.cxl_mem_agent_mon_port.connect(cxl_sbd_h.cxlio_txfifo.analysis_export);
 endfunction:connect_phase
 
 //*********************************Report for checking error************************************************

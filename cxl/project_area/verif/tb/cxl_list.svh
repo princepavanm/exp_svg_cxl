@@ -47,6 +47,13 @@
   `include "reset_pcie_agent_mon.sv"
   `include "reset_pcie_agent.sv"
 
+  `include "cxl_mem_agent_tx.sv"
+  `include "cxl_mem_agent_drv.sv"
+  `include "cxl_mem_agent_sqr.sv"
+  `include "cxl_mem_agent_cov.sv"
+  `include "cxl_mem_agent_mon.sv"
+  `include "cxl_mem_agent.sv"
+  
   `include "cxl_pcie_agent_tx.sv"
   `include "cxl_io_mctp.sv"
   `include "cxl_pcie_agent_drv.sv"
@@ -54,6 +61,7 @@
   `include "cxl_pcie_agent_cov.sv"
   `include "cxl_pcie_agent_mon.sv"
   `include "cxl_pcie_agent.sv"
+
 
   `include "../agents/axi_pcie_agent/axi_agent_tx.sv"
   `include "../agents/axi_pcie_agent/axi_agent_drv.sv" 

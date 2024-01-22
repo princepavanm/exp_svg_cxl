@@ -47,7 +47,75 @@ module top;
 
   always #5 clk = ~clk;
 
-//DUT Instantiation
+`ifdef CXL_MEM
+
+//fabric manager module instantiation
+fabric_manager uut (
+
+
+               .fm_clk    		(pcie_pif.fm_clk    		),                          
+               .fm_rst  		(pcie_pif.fm_rst  		),
+                                                                           
+                                                                           
+              .a2f_txcon_req		(pcie_pif.a2f_txcon_req		),
+              .a2f_rxcon_ack		(pcie_pif.a2f_rxcon_ack		),
+              .a2f_rxdiscon_nack	(pcie_pif.a2f_rxdiscon_nack	),
+              .a2f_rx_empty		(pcie_pif.a2f_rx_empty		),
+              .a2f_fatal		(pcie_pif.a2f_fatal		),
+                                                                           
+              .f2a_txcon_req		(pcie_pif.f2a_txcon_req		),
+              .f2a_rxcon_ack            (pcie_pif.f2a_rxcon_ack
+              .f2a_rxdiscon_nack 	(pcie_pif.f2a_rxdiscon_nack 	),	
+              .f2a_rx_empty		(pcie_pif.f2a_rx_empty		),
+              .f2a_fatal		(pcie_pif.f2a_fatal		),
+                                                                           
+              .a2f_req_is_valid		(pcie_pif.a2f_req_is_valid	),	
+              .a2f_req_protocol_id	(pcie_pif.a2f_req_protocol_id	),	
+              .a2f_req_header		(pcie_pif.a2f_req_header	),				
+                                                                           
+	                                                                   
+              .f2a_req_is_valid		(pcie_pif.f2a_req_is_valid	),
+              .f2a_req_protocol_id	(pcie_pif.f2a_req_protocol_id	),
+              .f2a_req_header		(pcie_pif.f2a_req_header	),
+                                                                           
+                                                                           
+              .a2f_rsp_is_valid		(pcie_pif.a2f_rsp_is_valid	),
+              .a2f_rsp_protocol_id	(pcie_pif.a2f_rsp_protocol_id	),
+              .a2f_rsp_header		(pcie_pif.a2f_rsp_header	),
+              .a2f_rsp_excrd_valid	(pcie_pif.a2f_rsp_excrd_valid	),
+                                                                           
+              .f2a_rsp_is_valid		(pcie_pif.f2a_rsp_is_valid	),
+              .f2a_rsp_protocol_id	(pcie_pif.f2a_rsp_protocol_id	),
+              .f2a_rsp_header		(pcie_pif.f2a_rsp_header	),
+              .f2a_rsp_excrd_valid	(pcie_pif.f2a_rsp_excrd_valid	),
+                                                                           
+              .a2f_data_is_valid	(pcie_pif.a2f_data_is_valid	),          
+              .a2f_data_protocol_id	(pcie_pif.a2f_data_protocol_id	),
+              .a2f_data_header		(pcie_pif.a2f_data_header	),
+              .a2f_data_body		(pcie_pif.a2f_data_body		),
+              .a2f_data_byte_en		(pcie_pif.a2f_data_byte_en	),
+              .a2f_data_poison		(pcie_pif.a2f_data_poison	),
+              .a2f_data_parity		(pcie_pif.a2f_data_parity	),
+              .a2f_data_eop		(pcie_pif.a2f_data_eop		),
+                                                                           
+                                                                           
+              .f2a_data_is_valid        (pcie_pif.f2a_data_is_valid     ),      
+              .f2a_data_protocol_id	(pcie_pif.f2a_data_protocol_id	),
+              .f2a_data_header		(pcie_pif.f2a_data_header	),
+              .f2a_data_body		(pcie_pif.f2a_data_body		),
+              .f2a_data_byte_en		(pcie_pif.f2a_data_byte_en	),
+              .f2a_data_poison		(pcie_pif.f2a_data_poison	),
+              .f2a_data_parity		(pcie_pif.f2a_data_parity	),
+              .f2a_data_eop		(pcie_pif.f2a_data_eop		)
+
+
+
+);
+
+
+
+`else
+
 pcie_axi_master dut(	.clk(clk),
 			.rst(pcie_pif.rst),
 
@@ -136,6 +204,10 @@ pcie_axi_master dut(	.clk(clk),
                         .m_axi_rready(pcie_pif.m_axi_rready)
 
 );
+
+
+
+`endif
 
 //Register interfaces to config_db
   initial begin

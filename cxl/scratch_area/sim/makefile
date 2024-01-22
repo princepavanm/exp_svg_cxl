@@ -26,7 +26,7 @@ TOP_FILE=$(TB_DIR)/top.sv
 LOG_DIR=$(MODULE_PATH)/scratch_area/log
 SIM_DIR=$(MODULE_PATH)/scratch_area/sim
 
-INC_DIR=+incdir+$(DUT_DIR) +incdir+$(AGENT_DIR) +incdir+$(AGENT_DIR)/req_pcie_agent +incdir+$(AGENT_DIR)/comp_pcie_agent +incdir+$(AGENT_DIR)/reset_pcie_agent +incdir+$(AGENT_DIR)/cxl_pcie_agent +incdir+$(AGENT_DIR)/output_pcie_agent +incdir+$(AGENT_DIR)/cxlio_mctp +incdir+$(TEST_DIR) +incdir+$(SEQ_DIR) +incdir+$(TB_DIR) +incdir+$(LOG_DIR) +incdir+$(SIM_DIR)
+INC_DIR=+incdir+$(DUT_DIR) +incdir+$(AGENT_DIR) +incdir+$(AGENT_DIR)/req_pcie_agent +incdir+$(AGENT_DIR)/comp_pcie_agent +incdir+$(AGENT_DIR)/reset_pcie_agent +incdir+$(AGENT_DIR)/cxl_pcie_agent +incdir+$(AGENT_DIR)/cxl_mem_agent +incdir+$(AGENT_DIR)/output_pcie_agent +incdir+$(AGENT_DIR)/cxlio_mctp +incdir+$(TEST_DIR) +incdir+$(SEQ_DIR) +incdir+$(TB_DIR) +incdir+$(LOG_DIR) +incdir+$(SIM_DIR)
 
 help:
 	@echo =============================================================================================================

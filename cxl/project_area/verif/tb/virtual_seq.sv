@@ -6,6 +6,7 @@ class virtual_sequence extends uvm_sequence#(uvm_sequence_item);
   axi_agent_sqr 	 axi_agent_sqr_h;
   reset_pcie_agent_sqr   reset_pcie_agent_sqr_h;
   cxl_pcie_agent_sqr       cxl_pcie_agent_sqr_h;  
+  cxl_mem_agent_sqr      cxl_mem_agent_sqr_h; 
   
   extern function new(string name="virtual_sequence");
   extern task body(); 
@@ -28,6 +29,7 @@ task virtual_sequence::body();
   reset_pcie_agent_sqr_h=v_sqr_h.reset_pcie_agent_sqr_h;  
   axi_agent_sqr_h=v_sqr_h.axi_agent_sqr_h;
   cxl_pcie_agent_sqr_h = v_sqr_h.cxl_pcie_agent_sqr_h;
+  cxl_mem_agent_sqr_h = v_sqr_h.cxl_mem_agent_sqr_h;
 
 endtask	
 
