@@ -53,8 +53,8 @@ module top;
 fabric_manager uut (
 
 
-               .fm_clk    		(pcie_pif.fm_clk    		),                          
-               .fm_rst  		(pcie_pif.fm_rst  		),
+               .fm_clk    		(clk    		        ),                          
+               .fm_rst  		(pcie_pif.rst  	         	),
                                                                            
                                                                            
               .a2f_txcon_req		(pcie_pif.a2f_txcon_req		),
@@ -64,7 +64,7 @@ fabric_manager uut (
               .a2f_fatal		(pcie_pif.a2f_fatal		),
                                                                            
               .f2a_txcon_req		(pcie_pif.f2a_txcon_req		),
-              .f2a_rxcon_ack            (pcie_pif.f2a_rxcon_ack
+              .f2a_rxcon_ack            (pcie_pif.f2a_rxcon_ack         ),
               .f2a_rxdiscon_nack 	(pcie_pif.f2a_rxdiscon_nack 	),	
               .f2a_rx_empty		(pcie_pif.f2a_rx_empty		),
               .f2a_fatal		(pcie_pif.f2a_fatal		),

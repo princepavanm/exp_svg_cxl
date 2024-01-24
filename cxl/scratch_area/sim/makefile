@@ -14,6 +14,7 @@ DUMP_OPTS=DUMP_ON
 DUT_DIR=$(MODULE_PATH)/project_area/design/rtl
 
 DUT_FILE=$(DUT_DIR)/pcie_axi_master.v
+CXL_MEM_FILE=$(DUT_DIR)/cxl_mem.sv
 
 TB_DIR=$(MODULE_PATH)/project_area/verif/tb
 AGENT_DIR=$(MODULE_PATH)/project_area/verif/agents
@@ -43,6 +44,9 @@ help:
 
 comp:
 	vlog -coveropt 3 +cover -L $(QUESTA_HOME)/uvm-1.2 +define+$(DUMP_OPTS) $(INC_DIR) $(DUT_FILE) $(TOP_FILE)
+
+comp_cxl:
+	vlog -coveropt 3 +cover -L $(QUESTA_HOME)/uvm-1.2 +define+CXL_MEM +define+$(DUMP_OPTS) $(INC_DIR) $(CXL_MEM_FILE) $(TOP_FILE)
 
 vsim:
 	rm -rf $(LOG_DIR)/$(TEST_NAME)_$(SEED)

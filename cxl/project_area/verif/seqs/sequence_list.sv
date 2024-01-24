@@ -20,3 +20,4 @@
 `include "reset_seq.sv"
 `include "axi_to_comp_seq.sv"
 `include "req_to_cxlio_FD.sv"
+`include "cxl_mem_rand_seq.sv"
