@@ -14,7 +14,12 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 
+class cxl_mem_a2f_sqr extends uvm_sequencer#(cxl_mem_a2f_tx);
 
-  //Implement Modpot and clocking block here
+  `uvm_component_utils(cxl_mem_a2f_sqr)
 
-endinterface:cxl_intf
+  function new(string name="cxl_mem_a2f_sqr", uvm_component parent=null);
+    super.new(name, parent);
+  endfunction:new
+
+endclass:cxl_mem_a2f_sqr

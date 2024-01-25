@@ -14,15 +14,17 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 
-class cxl_mem_agent_drv extends uvm_driver#(cxl_mem_tx);
+class cxl_mem_f2a_mon extends uvm_monitor;
 
-  `uvm_component_utils(cxl_mem_agent_drv)
+  `uvm_component_utils(cxl_mem_f2a_mon)
 
-  cxl_mem_tx               tx_h;
-
+  cxl_mem_f2a_tx   tx_h;
+  
   virtual pcie_intf     pcie_pif;
 
-  function new(string name="cxl_mem_agent_drv", uvm_component parent=null);
+  uvm_analysis_port #(cxl_mem_f2a_tx)       cxl_mem_f2a_mon_port;
+
+  function new(string name="cxl_mem_f2a_mon", uvm_component parent=null);
     super.new(name, parent);
   endfunction:new
 
@@ -30,19 +32,15 @@ class cxl_mem_agent_drv extends uvm_driver#(cxl_mem_tx);
     super.build_phase(phase);
     if(!uvm_config_db#(virtual pcie_intf)::get(this, " ", "pcie_intf", pcie_pif))
       `uvm_fatal("DRV", "***** Could not get pcie_pif *****")
+    cxl_mem_f2a_mon_port = new("cxl_mem_f2a_mon_port", this);
+    tx_h = cxl_mem_f2a_tx::type_id::create("tx_h", this);
 
-    tx_h = cxl_mem_tx::type_id::create("tx_h");
   endfunction:build_phase
 
-  task run_phase(uvm_phase phase);
-    forever
-    begin
-     	seq_item_port.get_next_item(tx_h);
-       		//drive_tx(tx_h);
-     	seq_item_port.item_done();
-    end
+  virtual task run_phase(uvm_phase phase);
+    super.run_phase(phase);
 
+    `uvm_info("cxl_mem_f2a_mon","Monitor Run Phase", UVM_LOW)
   endtask:run_phase
 
- 
-endclass:cxl_mem_agent_drv
+endclass:cxl_mem_f2a_mon

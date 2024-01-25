@@ -14,12 +14,12 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 
-class cxl_mem_agent_sqr extends uvm_sequencer#(cxl_mem_tx);
+class cxl_mem_f2a_sqr extends uvm_sequencer#(cxl_mem_f2a_tx);
 
-  `uvm_component_utils(cxl_mem_agent_sqr)
+  `uvm_component_utils(cxl_mem_f2a_sqr)
 
-  function new(string name="cxl_mem_agent_sqr", uvm_component parent=null);
+  function new(string name="cxl_mem_f2a_sqr", uvm_component parent=null);
     super.new(name, parent);
   endfunction:new
 
-endclass:cxl_mem_agent_sqr
+endclass:cxl_mem_f2a_sqr

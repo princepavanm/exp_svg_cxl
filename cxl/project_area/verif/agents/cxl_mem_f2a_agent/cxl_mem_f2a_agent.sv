@@ -14,30 +14,27 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 
-class cxl_mem_agent extends uvm_agent;
+class cxl_mem_f2a_agent extends uvm_agent;
 
-  cxl_mem_agent_mon      mon_h; 
+  cxl_mem_f2a_mon      mon_h; 
 
   virtual pcie_intf     pcie_pif;
 
-  cxl_mem_agent_drv      drv_h; 
-  cxl_mem_agent_sqr      sqr_h; 
-  cxl_mem_agent_cov      cov_h; 
+  cxl_mem_f2a_drv      drv_h; 
+  cxl_mem_f2a_sqr      sqr_h; 
 
-  `uvm_component_utils(cxl_mem_agent)
+  `uvm_component_utils(cxl_mem_f2a_agent)
 
-  function new(string name="cxl_mem_agent", uvm_component parent=null);
+  function new(string name="cxl_mem_f2a_agent", uvm_component parent=null);
     super.new(name, parent);
   endfunction:new
 
   function void build_phase(uvm_phase phase);
     super.build_phase(phase);
 
-     mon_h = cxl_mem_agent_mon::type_id::create("mon_h", this);
-
-     drv_h = cxl_mem_agent_drv::type_id::create("drv_h", this);
-     sqr_h = cxl_mem_agent_sqr::type_id::create("sqr_h", this);
-     cov_h = cxl_mem_agent_cov::type_id::create("cov_h", this);
+     mon_h = cxl_mem_f2a_mon::type_id::create("mon_h", this);
+     drv_h = cxl_mem_f2a_drv::type_id::create("drv_h", this);
+     sqr_h = cxl_mem_f2a_sqr::type_id::create("sqr_h", this);
 
     if(!uvm_config_db#(virtual pcie_intf)::get(this," ","pcie_intf",pcie_pif))
       `uvm_fatal("AGENT", "***** Could not get vif *****")
@@ -52,4 +49,4 @@ class cxl_mem_agent extends uvm_agent;
 
   endfunction:connect_phase
 
-endclass:cxl_mem_agent
+endclass:cxl_mem_f2a_agent
