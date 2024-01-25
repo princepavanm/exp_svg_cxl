@@ -4,7 +4,8 @@ REQ_TO_AXI_TRAFFIC_TEST= req_to_axi_traffic_test
 RESET_TEST = reset_test
 A2C_TEST = axi_to_comp_test
 CXL_MCTP_FD = cxlio_FD_test
-
+CXL_MEM = cxl_mem_rand_test
+CXL_MEM_F2A = cxl_f2a_rand_test
 
 MODULE_PATH=../../../cxl
 
@@ -27,7 +28,7 @@ TOP_FILE=$(TB_DIR)/top.sv
 LOG_DIR=$(MODULE_PATH)/scratch_area/log
 SIM_DIR=$(MODULE_PATH)/scratch_area/sim
 
-INC_DIR=+incdir+$(DUT_DIR) +incdir+$(AGENT_DIR) +incdir+$(AGENT_DIR)/req_pcie_agent +incdir+$(AGENT_DIR)/comp_pcie_agent +incdir+$(AGENT_DIR)/reset_pcie_agent +incdir+$(AGENT_DIR)/cxl_pcie_agent +incdir+$(AGENT_DIR)/cxl_mem_agent +incdir+$(AGENT_DIR)/output_pcie_agent +incdir+$(AGENT_DIR)/cxlio_mctp +incdir+$(TEST_DIR) +incdir+$(SEQ_DIR) +incdir+$(TB_DIR) +incdir+$(LOG_DIR) +incdir+$(SIM_DIR)
+INC_DIR=+incdir+$(DUT_DIR) +incdir+$(AGENT_DIR) +incdir+$(AGENT_DIR)/req_pcie_agent +incdir+$(AGENT_DIR)/comp_pcie_agent +incdir+$(AGENT_DIR)/reset_pcie_agent +incdir+$(AGENT_DIR)/cxl_pcie_agent +incdir+$(AGENT_DIR)/cxl_mem_a2f_agent+incdir+$(AGENT_DIR)/cxl_mem_f2a_agent  +incdir+$(AGENT_DIR)/output_pcie_agent +incdir+$(AGENT_DIR)/cxlio_mctp +incdir+$(TEST_DIR) +incdir+$(SEQ_DIR) +incdir+$(TB_DIR) +incdir+$(LOG_DIR) +incdir+$(SIM_DIR)
 
 help:
 	@echo =============================================================================================================
@@ -80,6 +81,18 @@ run_cxliomctpFD_test: comp
 	rm -rf $(CXL_MCTP_FD)_$(SEED).ucdb
 	mkdir $(LOG_DIR)/$(CXL_MCTP_FD)_$(SEED)
 	vsim -c -debugDB  -sv_seed $(SEED) -cvgperinstance -voptargs=+acc -coverage -voptargs="+cover=all"  +UVM_VERBOSITY=UVM_MEDIUM +UVM_TESTNAME=$(CXL_MCTP_FD) -l $(LOG_DIR)/$(CXL_MCTP_FD)_$(SEED)/$(CXL_MCTP_FD)_$(SEED).log -do "coverage save -onexit $(LOG_DIR)/$(CXL_MCTP_FD)_$(SEED)/$(CXL_MCTP_FD)_$(SEED).ucdb;  run -all;exit" work.top
+
+run_cxlmem_test: comp_cxl
+	rm -rf $(LOG_DIR)/$(CXL_MEM)_$(SEED)
+	rm -rf $(CXL_MEM)_$(SEED).ucdb
+	mkdir $(LOG_DIR)/$(CXL_MEM)_$(SEED)
+	vsim -c -debugDB  -sv_seed $(SEED) -cvgperinstance -voptargs=+acc -coverage -voptargs="+cover=all"  +UVM_VERBOSITY=UVM_MEDIUM +UVM_TESTNAME=$(CXL_MEM) -l $(LOG_DIR)/$(CXL_MEM)_$(SEED)/$(CXL_MEM)_$(SEED).log -do "coverage save -onexit $(LOG_DIR)/$(CXL_MEM)_$(SEED)/$(CXL_MEM)_$(SEED).ucdb;  run -all;exit" work.top
+
+run_cxlf2a_test: comp_cxl
+	rm -rf $(LOG_DIR)/$(CXL_MEM_F2A)_$(SEED)
+	rm -rf $(CXL_MEM_F2A)_$(SEED).ucdb
+	mkdir $(LOG_DIR)/$(CXL_MEM_F2A)_$(SEED)
+	vsim -c -debugDB  -sv_seed $(SEED) -cvgperinstance -voptargs=+acc -coverage -voptargs="+cover=all"  +UVM_VERBOSITY=UVM_MEDIUM +UVM_TESTNAME=$(CXL_MEM_F2A) -l $(LOG_DIR)/$(CXL_MEM_F2A)_$(SEED)/$(CXL_MEM_F2A)_$(SEED).log -do "coverage save -onexit $(LOG_DIR)/$(CXL_MEM_F2A)_$(SEED)/$(CXL_MEM_F2A)_$(SEED).ucdb;  run -all;exit" work.top
 
 run_sanity: run_reset_test run_r2a_test  run_a2c_test
 
