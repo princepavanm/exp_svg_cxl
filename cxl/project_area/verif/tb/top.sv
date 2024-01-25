@@ -35,13 +35,13 @@ module top;
 //Rst and Clock generation
   initial begin
 
-    clk = 0;
+    clk = 1;
 
     //rst = 1;
-    //#10;
-    //rst = 0;
+   // #10;
+   // rst = 0;
 
-   // #500us;
+    //#500us;
     //$finish();
   end
 

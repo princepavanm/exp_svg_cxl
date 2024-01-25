@@ -6,7 +6,8 @@ class virtual_sequence extends uvm_sequence#(uvm_sequence_item);
   axi_agent_sqr 	 axi_agent_sqr_h;
   reset_pcie_agent_sqr   reset_pcie_agent_sqr_h;
   cxl_pcie_agent_sqr       cxl_pcie_agent_sqr_h;  
-  cxl_mem_agent_sqr      cxl_mem_agent_sqr_h; 
+  cxl_mem_a2f_sqr      cxl_mem_a2f_sqr_h; 
+  cxl_mem_f2a_sqr      cxl_mem_f2a_sqr_h; 
   
   extern function new(string name="virtual_sequence");
   extern task body(); 
@@ -29,7 +30,8 @@ task virtual_sequence::body();
   reset_pcie_agent_sqr_h=v_sqr_h.reset_pcie_agent_sqr_h;  
   axi_agent_sqr_h=v_sqr_h.axi_agent_sqr_h;
   cxl_pcie_agent_sqr_h = v_sqr_h.cxl_pcie_agent_sqr_h;
-  cxl_mem_agent_sqr_h = v_sqr_h.cxl_mem_agent_sqr_h;
+  cxl_mem_a2f_sqr_h = v_sqr_h.cxl_mem_a2f_sqr_h;
+  cxl_mem_f2a_sqr_h = v_sqr_h.cxl_mem_f2a_sqr_h;
 
 endtask	
 
@@ -140,4 +142,54 @@ task virt_req_to_cxlio_FD:: body();
 endtask 
 
 
+/**********************************************CXL MEM A2F ************************************/
+class virt_cxl_mem_a2f extends virtual_sequence; 
+ `uvm_object_utils(virt_cxl_mem_a2f)
+  
+  cxl_virtual_sqr v_sqr_h;
+  
+cxl_mem_rand_seq  cxl_mem_rand_seq_h;
+  
+
+  extern function new(string name="virt_cxl_mem_a2f");
+  extern task body();
+
+endclass
+
+/************** constructor*******************/
+function virt_cxl_mem_a2f::new(string name="virt_cxl_mem_a2f");
+  super.new(name);
+endfunction	
+
+/****************** body**************************/
+task virt_cxl_mem_a2f:: body();
+  super.body();
+  cxl_mem_rand_seq_h = cxl_mem_rand_seq::type_id::create("cxl_mem_rand_seq_h");
+  cxl_mem_rand_seq_h.start(cxl_mem_a2f_sqr_h);
+endtask 
+
+/**********************************************CXL MEM F2A ************************************/
+class virt_cxl_mem_f2a extends virtual_sequence; 
+ `uvm_object_utils(virt_cxl_mem_f2a)
+  
+  cxl_virtual_sqr v_sqr_h;
+  cxl_f2a_rand_seq  cxl_f2a_rand_seq_h;
+  
+
+  extern function new(string name="virt_cxl_mem_f2a");
+  extern task body();
+
+endclass
+
+/************** constructor*******************/
+function virt_cxl_mem_f2a::new(string name="virt_cxl_mem_f2a");
+  super.new(name);
+endfunction	
+
+/****************** body**************************/
+task virt_cxl_mem_f2a:: body();
+  super.body();
+  cxl_f2a_rand_seq_h = cxl_f2a_rand_seq::type_id::create("cxl_f2a_rand_seq_h");
+  cxl_f2a_rand_seq_h.start(cxl_mem_f2a_sqr_h);
+endtask 
 

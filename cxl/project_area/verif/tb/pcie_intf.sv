@@ -91,63 +91,63 @@ logic [191:0]                             cxlio_mctp_rsp_pkt;
 //
 //clk and reset
 logic                            	fm_clk;
-logic                                    fm_rst;
+logic                                   fm_rst;
 
 
 // CPI Interface Signals 
 // Global layer Signals (A2F) Agent to fabric
 
-logic                                               a2f_txcon_req;
-logic                                               a2f_rxcon_ack;
-logic                                               a2f_rxdiscon_nack;
-logic                                               a2f_rx_empty;
-logic                                               a2f_fatal;
+logic                                        a2f_txcon_req;
+logic                                        a2f_rxcon_ack;
+logic                                        a2f_rxdiscon_nack;
+logic                                        a2f_rx_empty;
+logic                                        a2f_fatal;
 
 // Global layer Signals (F2A) Fabric to Agent
 
- logic                                               f2a_txcon_req;
- logic                                               f2a_rxcon_ack;
- logic                                               f2a_rxdiscon_nack;
- logic                                               f2a_rx_empty;
- logic                                               f2a_fatal;
+ logic                                       f2a_txcon_req;
+ logic                                       f2a_rxcon_ack;
+ logic                                       f2a_rxdiscon_nack;
+ logic                                       f2a_rx_empty;
+ logic                                       f2a_fatal;
 
 // Request layer Signals (A2F) Agent to fabric
 
-logic                                       a2f_req_is_valid;
-logic                                       a2f_req_protocol_id;
-logic                                       a2f_req_header;
+logic                                        a2f_req_is_valid;
+logic [3:0]                                    a2f_req_protocol_id;
+logic [128:0]                                       a2f_req_header;
 
 
 // Request layer Signals (F2A) Fabric to Agent
 
-logic                                     f2a_req_is_valid;
-logic                                     f2a_req_protocol_id;
-logic                                     f2a_req_header;
+logic                                        f2a_req_is_valid;
+logic  [3:0]                                      f2a_req_protocol_id;
+logic   [127:0]                                     f2a_req_header;
 
 
 
 // Response layer Signals (A2F) Agent to Fabric
 
- logic                                           a2f_rsp_is_valid;
- logic                                           a2f_rsp_protocol_id;
- logic                                           a2f_rsp_header;
- logic                                           a2f_rsp_excrd_valid;
+ logic                                        a2f_rsp_is_valid;
+ logic  [3:0]                                      a2f_rsp_protocol_id;
+ logic  [127:0]                                      a2f_rsp_header;
+ logic                                        a2f_rsp_excrd_valid;
 
 
 // Response layer Signals (F2A) Fabric to Agent
 
 logic                                          f2a_rsp_is_valid;
-logic                                          f2a_rsp_protocol_id;
-logic                                          f2a_rsp_header;
+logic  [3:0]                                        f2a_rsp_protocol_id;
+logic  [127:0]                                        f2a_rsp_header;
 logic                                          f2a_rsp_excrd_valid;
 
 // Data layer Signals (A2F) Agent to Fabric
 
 logic                                         a2f_data_is_valid;             
-logic                                         a2f_data_protocol_id;
-logic                                         a2f_data_header;
-logic                                         a2f_data_body;
-logic                                         a2f_data_byte_en;
+logic   [3:0]                                      a2f_data_protocol_id;
+logic   [127:0]                                      a2f_data_header;
+logic   [127:0]                                      a2f_data_body;
+logic    [3:0]                                     a2f_data_byte_en;
 logic                                         a2f_data_poison;
 logic                                         a2f_data_parity;
 logic                                         a2f_data_eop;
@@ -156,10 +156,10 @@ logic                                         a2f_data_eop;
 // Data layer Signals (F2A) Fabric to Agent
 
 logic                                        f2a_data_is_valid;                   
-logic                                        f2a_data_protocol_id;
-logic                                        f2a_data_header;
-logic                                        f2a_data_body;
-logic                                        f2a_data_byte_en;
+logic   [3:0]                                f2a_data_protocol_id;
+logic   [127:0]                                     f2a_data_header;
+logic   [127:0]                                     f2a_data_body;
+logic    [3:0]                                    f2a_data_byte_en;
 logic                                        f2a_data_poison;
 logic                                        f2a_data_parity;
 logic                                        f2a_data_eop;
@@ -350,6 +350,170 @@ endclocking
 endclocking 
 
 
+//=====================================================================
+//cxl mem a2f driver clocking block
+//=====================================================================
+
+ clocking cxla2f_drv@(posedge clk);
+  default input #0 output #0;
+
+output      a2f_txcon_req;
+input       a2f_rxcon_ack;
+input       a2f_rxdiscon_nack;
+input       a2f_rx_empty;
+output      a2f_fatal;
+
+output      a2f_req_is_valid;
+output      a2f_req_protocol_id;
+output      a2f_req_header;
+
+
+output      a2f_rsp_is_valid;
+output      a2f_rsp_protocol_id;
+output      a2f_rsp_header;
+input       a2f_rsp_excrd_valid;
+
+output      a2f_data_is_valid;             
+output      a2f_data_protocol_id;
+output      a2f_data_header;
+output      a2f_data_body;
+output      a2f_data_byte_en;
+output      a2f_data_poison;
+output      a2f_data_parity;
+output      a2f_data_eop;
+
+ endclocking 
+
+
+
+
+
+
+//=====================================================================
+//cxl mem a2f mon clocking block
+//=====================================================================
+ clocking cxla2f_mon@(posedge clk);
+  default input #0 output #0;
+input     a2f_txcon_req;
+input     a2f_rxcon_ack;
+input     a2f_rxdiscon_nack;
+input     a2f_rx_empty;
+input     a2f_fatal;
+
+
+input     a2f_req_is_valid;
+input     a2f_req_protocol_id;
+input     a2f_req_header;
+
+
+
+input     a2f_rsp_is_valid;
+input     a2f_rsp_protocol_id;
+input     a2f_rsp_header;
+input     a2f_rsp_excrd_valid;
+
+
+
+input     a2f_data_is_valid;             
+input     a2f_data_protocol_id;
+input     a2f_data_header;
+input     a2f_data_body;
+input     a2f_data_byte_en;
+input     a2f_data_poison;
+input     a2f_data_parity;
+input     a2f_data_eop;
+  
+endclocking 
+
+
+
+
+
+
+
+//=====================================================================
+//cxl mem f2a driver clocking block
+//=====================================================================
+ clocking cxlf2a_drv@(posedge clk);
+  default input #0 output #0;
+
+
+input    	f2a_txcon_req;
+output     	f2a_rxcon_ack;
+output     	f2a_rxdiscon_nack;
+output     	f2a_rx_empty;
+input    	f2a_fatal;
+
+input   	f2a_req_is_valid;
+input   	f2a_req_protocol_id;
+input   	f2a_req_header;
+
+input   	f2a_rsp_is_valid;
+input   	f2a_rsp_protocol_id;
+input   	f2a_rsp_header;
+output    	f2a_rsp_excrd_valid;
+
+
+input   	f2a_data_is_valid;                   
+input   	f2a_data_protocol_id;
+input   	f2a_data_header;
+input   	f2a_data_body;
+input   	f2a_data_byte_en;
+input   	f2a_data_poison;
+input   	f2a_data_parity;
+input   	f2a_data_eop;
+
+  
+ endclocking 
+
+
+
+
+
+
+//=====================================================================
+//cxl mem f2a mon clocking block
+//=====================================================================
+
+ clocking cxlf2a_mon@(posedge clk);
+  default input #0 output #0;
+
+
+input       f2a_txcon_req;
+input       f2a_rxcon_ack;
+input       f2a_rxdiscon_nack;
+input       f2a_rx_empty;
+input       f2a_fatal;
+
+
+input       f2a_req_is_valid;
+input       f2a_req_protocol_id;
+input       f2a_req_header;
+
+
+input       f2a_rsp_is_valid;
+input       f2a_rsp_protocol_id;
+input       f2a_rsp_header;
+input       f2a_rsp_excrd_valid;
+
+
+input       f2a_data_is_valid;                   
+input       f2a_data_protocol_id;
+input       f2a_data_header;
+input       f2a_data_body;
+input       f2a_data_byte_en;
+input       f2a_data_poison;
+input       f2a_data_parity;
+input       f2a_data_eop;
+  
+  endclocking 
+
+
+
+
+
+
+
 
 
 //=====================================================================
@@ -357,10 +521,19 @@ endclocking
 //=====================================================================
  modport mon_mp(clocking mon_cb);
  modport dri_mp(clocking dri_cb);
+
  modport axi_drv_mp(clocking axi_drv_cb);
  modport comp_drv_mp(clocking comp_drv_cb);
+
  modport comp_mon_mp(clocking comp_mon);
  modport axi_mon_mp(clocking axi_mon_cb);
+
  modport cxlio_drv_mp(clocking cxlio_drv);
  modport cxlio_mon_mp(clocking cxlio_mon);
-endinterface:pcie_intf
+
+ modport cxla2f_drv_mp(clocking cxla2f_drv);
+ modport cxla2f_mon_mp(clocking cxla2f_mon);
+
+ modport cxlf2a_drv_mp(clocking cxlf2a_drv);
+ modport cxlf2a_mon_mp(clocking cxlf2a_mon);
+ endinterface:pcie_intf
