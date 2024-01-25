@@ -31,14 +31,14 @@ output  bit                                                f2a_fatal,
 
 input bit                                                  a2f_req_is_valid,
 input bit[3:0]                                             a2f_req_protocol_id,
-input bit[128:0]                                           a2f_req_header,
+input bit[127:0]                                           a2f_req_header,
 
 
 // Request layer Signals (F2A) Fabric to Agent
 
 output bit                                                 f2a_req_is_valid,
 output bit[3:0]                                            f2a_req_protocol_id,
-output bit[128:0]                                          f2a_req_header,
+output bit[127:0]                                          f2a_req_header,
 
 
 
@@ -46,7 +46,7 @@ output bit[128:0]                                          f2a_req_header,
 
 input bit                                                  a2f_rsp_is_valid,
 input bit[3:0]                                             a2f_rsp_protocol_id,
-input bit[128:0]                                           a2f_rsp_header,
+input bit[127:0]                                           a2f_rsp_header,
 output bit                                                 a2f_rsp_excrd_valid,
 
 
@@ -54,7 +54,7 @@ output bit                                                 a2f_rsp_excrd_valid,
 
 output bit                                                 f2a_rsp_is_valid,
 output bit[3:0]                                            f2a_rsp_protocol_id,
-output bit[128:0]                                          f2a_rsp_header,
+output bit[127:0]                                          f2a_rsp_header,
 input bit                                                  f2a_rsp_excrd_valid,
 
 // Data layer Signals (A2F) Agent to Fabric
