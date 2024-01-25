@@ -21,3 +21,5 @@
 `include "reset_test.sv"
 `include "axi_to_comp_test.sv"
 `include "cxlio_FD_test.sv"
+`include "cxl_mem_rand_test.sv"
+`include "cxl_f2a_rand_test.sv"
