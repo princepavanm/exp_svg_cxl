@@ -1,5 +1,6 @@
 `include "ram_rtl.v"
 
+`timescale 1ns / 1ps
 
 //Active low Reset
 module fabric_manager(
@@ -89,18 +90,17 @@ output bit                                                 f2a_data_eop
 
 
 
-
 //RAM RTL Instantiation
 ram#(
-		  .ADDR(8),
+		  .ADDR(10),
 	  	  .DATA(8),
 		  .DEPTH(1024)
 
 		)
 		device_mem(
-		.clk(fm_clk),
+		.clk(),
 		.write_enable(),
-		.address(),
+		.write_address(),
 		.data_in(),
 		.data_out()
 	);
@@ -108,10 +108,14 @@ ram#(
 
 always@(posedge fm_clk)
 begin
-	if(fm_rst != 0)
+	if(fm_rst == 0)
 	begin
 		fork
 			a2f_connect_req();
+			a2f_req_check();
+			a2f_rsp_check();
+			a2f_data_check();
+		//	packet_parsing();
 		join
 	
 	end
@@ -135,6 +139,29 @@ task a2f_connect_req();
 		end
 
 endtask
+
+task a2f_req_check();
+	if(a2f_req_is_valid == 1 && a2f_rxcon_ack == 1 && a2f_req_protocol_id == 4'b1001)
+	begin
+	end
+endtask
+
+task a2f_rsp_check();
+	if(a2f_rsp_is_valid == 1 && a2f_rxcon_ack == 1 && a2f_rsp_protocol_id == 4'b1001)
+	begin
+	end
+endtask
+
+task a2f_data_check();
+	if(a2f_data_is_valid == 1 && a2f_rxcon_ack == 1 && a2f_data_protocol_id == 4'b1001)
+	begin
+	end
+endtask
+
+task packet_parsing();
+
+endtask
+
 
 
 endmodule
